@@ -40,5 +40,5 @@ public class User {
     private LocalDateTime updatedAt;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Character character;
+    private PlayerCharacter playerCharacter;
 }
