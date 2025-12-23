@@ -28,5 +28,8 @@ public class PlayerCharacterService {
         return playerCharacterRepository.save(newPlayerCharacter);
     }
 
+    public void deleteCharacter(PlayerCharacter character) {
+        playerCharacterRepository.delete(character);
+    }
 
 }
