@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.services;
+package dev.gamified.GamifiedPlatform.services.playerCharacter;
 
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class PlayerCharacterService {
+public class CreateCharacterForUserService {
 
     private final PlayerCharacterRepository playerCharacterRepository;
 
-    public PlayerCharacter createCharacterForUser(User savedUser) {
+    public PlayerCharacter execute(User savedUser) {
 
         PlayerCharacter newPlayerCharacter = PlayerCharacter.builder()
                 .name(savedUser.getUsername())
@@ -25,11 +25,9 @@ public class PlayerCharacterService {
                 .user(savedUser)
                 .build();
 
-        return playerCharacterRepository.save(newPlayerCharacter);
-    }
+        savedUser.setPlayerCharacter(newPlayerCharacter);
 
-    public void deleteCharacter(PlayerCharacter character) {
-        playerCharacterRepository.delete(character);
+        return playerCharacterRepository.save(newPlayerCharacter);
     }
 
 }
