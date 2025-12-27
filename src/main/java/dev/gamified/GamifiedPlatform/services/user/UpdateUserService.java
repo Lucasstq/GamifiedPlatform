@@ -7,9 +7,9 @@ import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
+import dev.gamified.GamifiedPlatform.utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 public class UpdateUserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserResponse execute(Long userId, UserUpdateRequest request) {
@@ -29,8 +28,6 @@ public class UpdateUserService {
 
         existingUser.setUsername(request.username());
         existingUser.setEmail(request.email());
-
-        existingUser.setPassword(passwordEncoder.encode(request.password()));
         existingUser.setAvatarUrl(request.avatarUrl());
 
         User updatedUser = userRepository.save(existingUser);

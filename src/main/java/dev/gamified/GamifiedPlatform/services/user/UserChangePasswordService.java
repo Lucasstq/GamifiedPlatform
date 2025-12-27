@@ -5,6 +5,7 @@ import dev.gamified.GamifiedPlatform.dtos.request.UserChangePasswordRequest;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ public class UserChangePasswordService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void execute(Long userId, UserChangePasswordRequest request) {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourseNotFoundException("User not found"));

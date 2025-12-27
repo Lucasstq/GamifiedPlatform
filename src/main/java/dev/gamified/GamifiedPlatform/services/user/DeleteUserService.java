@@ -5,6 +5,7 @@ import dev.gamified.GamifiedPlatform.exceptions.InvalidPasswordException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import dev.gamified.GamifiedPlatform.services.playerCharacter.DeletePlayerCharacterService;
+import dev.gamified.GamifiedPlatform.utils.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
