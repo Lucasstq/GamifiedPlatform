@@ -2,7 +2,6 @@ package dev.gamified.GamifiedPlatform.controller;
 
 import dev.gamified.GamifiedPlatform.dtos.request.DeleteUserRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.UserChangePasswordRequest;
-import dev.gamified.GamifiedPlatform.dtos.request.UserRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.UserUpdateRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import dev.gamified.GamifiedPlatform.services.user.*;
@@ -10,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,19 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final CreateUserService createUser;
     private final UpdateUserService updateUser;
     private final UserByIdService getUserById;
     private final UserByUsernameService getUserByUsername;
     private final UserChangePasswordService changePasswordService;
     private final DeleteUserService deleteUser;
 
-    @PostMapping()
-    public ResponseEntity<UserResponse> createUser(@RequestBody @Valid UserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(createUser.execute(request));
-    }
-
-    @PutMapping("/{id}/me")
+    @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long id, @Valid @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(updateUser.execute(id, request));
     }
@@ -51,6 +45,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('SCOPE_profile:delete')")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id, @Valid @RequestBody DeleteUserRequest request) {
         deleteUser.execute(id, request.password());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
