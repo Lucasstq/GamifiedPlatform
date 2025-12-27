@@ -18,3 +18,10 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+
+jwt:
+  public:
+    key: classpath:authz.pub
+  private:
+    key: classpath:authz.pem
