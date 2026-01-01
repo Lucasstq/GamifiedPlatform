@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.config;
+package dev.gamified.GamifiedPlatform.config.security;
 
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
