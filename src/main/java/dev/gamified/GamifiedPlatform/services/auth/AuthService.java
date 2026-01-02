@@ -64,6 +64,7 @@ public class AuthService {
                 .subject(user.getUsername())
                 .issuedAt(Instant.now())
                 .expiresAt(Instant.now().plusSeconds(expiresIn))
+                .claim("userId", user.getId())
                 .claim("username", user.getUsername())
                 .claim("scope", scopes)
                 .build();
