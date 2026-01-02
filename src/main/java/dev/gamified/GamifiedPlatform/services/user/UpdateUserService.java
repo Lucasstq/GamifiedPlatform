@@ -1,8 +1,10 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
+import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.request.UserUpdateRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
+import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
@@ -20,6 +22,8 @@ public class UpdateUserService {
     @Transactional
     public UserResponse execute(Long userId, UserUpdateRequest request) {
 
+        isOwnerOrAdmin(userId);
+
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourseNotFoundException("User not found"));
 
@@ -32,6 +36,14 @@ public class UpdateUserService {
         User updatedUser = userRepository.save(existingUser);
         return UserMapper.toResponse(updatedUser);
     }
+
+    // Verifica se o usuário autenticado tem permissão para atualizar
+    private void isOwnerOrAdmin(Long userId) {
+        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
+            throw new AcessDeniedException("You do not have permission to update this user");
+        }
+    }
+
 
     /*
     Verifica se o username ou email foram alterados e se já existem no banco de dados

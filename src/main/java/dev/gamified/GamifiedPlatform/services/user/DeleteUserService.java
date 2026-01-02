@@ -1,6 +1,8 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
+import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
+import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.InvalidPasswordException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
@@ -20,6 +22,9 @@ public class DeleteUserService {
 
     @Transactional
     public void execute(Long userId, String password) {
+
+        isOwnerOrAdmin(userId);
+
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourseNotFoundException("User not found"));
 
@@ -27,6 +32,13 @@ public class DeleteUserService {
         deleteAssociatedCharacter(existingUser);
 
         userRepository.delete(existingUser);
+    }
+
+    // Verifica se o usuário autenticado tem permissão para deletar
+    private void isOwnerOrAdmin(Long userId) {
+        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
+            throw new AcessDeniedException("You do not have permission to delete this user");
+        }
     }
 
     // Validar se a senha fornecida está correta para exclusão do usuário

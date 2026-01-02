@@ -1,7 +1,9 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
+import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.request.UserChangePasswordRequest;
+import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
@@ -19,6 +21,9 @@ public class UserChangePasswordService {
 
     @Transactional
     public void execute(Long userId, UserChangePasswordRequest request) {
+
+        isOwnerOrAdmin(userId);
+
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourseNotFoundException("User not found"));
 
@@ -27,6 +32,13 @@ public class UserChangePasswordService {
 
         existingUser.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(existingUser);
+    }
+
+    // Verifica se o usuário autenticado tem permissão para atualizar
+    private void isOwnerOrAdmin(Long userId) {
+        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
+            throw new AcessDeniedException("You do not have permission to update this user");
+        }
     }
 
     /*

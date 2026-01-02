@@ -1,7 +1,10 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
+import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
+import dev.gamified.GamifiedPlatform.enums.Roles;
+import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
@@ -17,7 +20,18 @@ public class UserByUsernameService {
     public UserResponse execute(String username) {
         User user = userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new ResourseNotFoundException("User not found"));
+
+        isOwnerOrAdmin(user.getId());
+
         return UserMapper.toResponse(user);
+    }
+
+    // Verifica se o usuário autenticado tem permissão para ver este perfil
+    // Permite acesso se for o próprio usuário, admin ou mentor
+    private void isOwnerOrAdmin(Long userId) {
+        if (!SecurityUtils.isResourceOwnerOrAdmin(userId) && !SecurityUtils.hasRole(Roles.ROLE_MENTOR)) {
+            throw new BusinessException("You do not have permission to view this user");
+        }
     }
 
 
