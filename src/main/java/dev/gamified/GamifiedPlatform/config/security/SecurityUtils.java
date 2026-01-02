@@ -48,6 +48,7 @@ public final class SecurityUtils {
                 .orElse(false);
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isResourceOwnerOrAdmin(Long resourceOwnerId) {
         if (resourceOwnerId == null) return false;
 
