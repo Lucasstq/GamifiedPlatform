@@ -9,6 +9,7 @@ import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
 import dev.gamified.GamifiedPlatform.repository.ScopeRepository;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
+import dev.gamified.GamifiedPlatform.services.email.EmailVerificationService;
 import dev.gamified.GamifiedPlatform.services.playerCharacter.CreateCharacterForUserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ public class CreateUserService {
     private final UserRepository userRepository;
     private final ScopeRepository scopeRepository;
     private final CreateCharacterForUserService createCharacterForUser;
+    private final EmailVerificationService emailVerificationService;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
@@ -38,6 +40,8 @@ public class CreateUserService {
             User savedUser = userRepository.save(newUser);
             // Cria personagem associado ao usuário
             createCharacterForUser.execute(savedUser);
+            // Envia email de confirmação
+            emailVerificationService.sendVerificationEmail(savedUser);
             return UserMapper.toResponse(savedUser);
         } catch (DataIntegrityViolationException e) {
             throw new BusinessException("Username or email already exists");
@@ -49,7 +53,8 @@ public class CreateUserService {
         User newUser = UserMapper.toEntity(request);
         newUser.setPassword(passwordEncoder.encode(request.password()));
         newUser.setRole(Roles.ROLE_USER); // Padrão
-        newUser.setActive(true);
+        newUser.setActive(false);
+        newUser.setEmailVerified(false);
         newUser.setScopes(getDefaultScopes(Roles.ROLE_USER));
         return newUser;
     }
