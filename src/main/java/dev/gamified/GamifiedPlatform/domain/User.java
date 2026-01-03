@@ -33,10 +33,19 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
-    private Boolean active = true;
+    private Boolean active = false;
 
     @Enumerated(EnumType.STRING)
     private Roles role;
+
+    @Column(name = "email_verified")
+    private Boolean emailVerified = false;
+
+    @Column(name = "email_verification_token")
+    private String emailVerificationToken;
+
+    @Column(name = "email_verification_token_expires_at")
+    private LocalDateTime emailVerificationTokenExpiresAt;
 
     @CreationTimestamp
     @Column(name = "created_at")
