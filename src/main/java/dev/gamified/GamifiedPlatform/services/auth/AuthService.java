@@ -29,6 +29,7 @@ public class AuthService {
                 .orElseThrow(() -> new BusinessException("Invalid username or password"));
 
         isPasswordCorrect(request.password(), user.getPassword());
+        isEmailVerified(user);
         isUserActive(user);
 
         String token = generateToken(user);
@@ -48,6 +49,12 @@ public class AuthService {
     private void isUserActive(User user) {
         if (!user.getActive()) {
             throw new BusinessException("User account is inactive");
+        }
+    }
+
+    private void isEmailVerified(User user) {
+        if (!user.getEmailVerified()) {
+            throw new BusinessException("Email address is not verified");
         }
     }
 

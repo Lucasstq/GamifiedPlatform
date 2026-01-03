@@ -56,7 +56,7 @@ public class UserController {
 
 ## Documentação Completa
 
-Para documentação detalhada com todos os exemplos, consulte: [SECURITY_ANNOTATIONS.md](./SECURITY_ANNOTATIONS.md)
+Para documentação detalhada com todos os exemplos, consulte: [SECURITY_ANNOTATIONS.md](SECURITY_ANNOTATIONS.md)
 
 ## Referência de Exemplos
 
