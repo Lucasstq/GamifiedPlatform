@@ -24,6 +24,9 @@ public enum ScopeType {
     QUESTS_WRITE("quests:write", "Criar/atualizar missões"),
     QUESTS_COMPLETE("quests:complete", "Completar missões"),
 
+    // Permissões de níveis
+    LEVELS_READ("levels:read", "Ler níveis"),
+
     // Permissões de conquistas
     ACHIEVEMENTS_READ("achievements:read", "Ler conquistas"),
 
@@ -46,6 +49,7 @@ public enum ScopeType {
                 PROFILE_READ,
                 PROFILE_WRITE,
                 PROFILE_DELETE,
+                LEVELS_READ,
                 CHARACTER_READ,
                 CHARACTER_WRITE,
                 QUESTS_READ,
