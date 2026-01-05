@@ -95,7 +95,7 @@ public class CreateUserService {
         return switch (role) {
             case ROLE_USER -> List.of(
                     "profile:read", "profile:write", "profile:delete",
-                    "character:read", "character:write",
+                    "character:read", "character:write", "levels:read",
                     "quests:read", "quests:complete", "achievements:read"
             );
             case ROLE_MENTOR -> List.of(
