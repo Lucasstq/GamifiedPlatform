@@ -1,0 +1,26 @@
+package dev.gamified.GamifiedPlatform.services.levels;
+
+import dev.gamified.GamifiedPlatform.domain.Levels;
+import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.mapper.LevelMapper;
+import dev.gamified.GamifiedPlatform.repository.LevelRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class LevelByOrderService {
+
+    private final LevelRepository levelRepository;
+
+    /**
+     * Busca um nível pelo seu número de ordem
+     */
+    public LevelResponse execute(Integer orderLevel) {
+        Levels level = levelRepository.findByOrderLevel(orderLevel)
+                .orElseThrow(() -> new ResourseNotFoundException("Level with order " + orderLevel + " not found"));
+        return LevelMapper.toResponse(level);
+    }
+
+}
