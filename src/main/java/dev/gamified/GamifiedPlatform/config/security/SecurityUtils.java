@@ -37,6 +37,10 @@ public final class SecurityUtils {
                 .isPresent();
     }
 
+    public static boolean hasAdminRole() {
+        return hasRole(Roles.ROLE_ADMIN);
+    }
+
     public static boolean hasRole(Roles role) {
         return role != null && hasAuthority(role.name());
     }
