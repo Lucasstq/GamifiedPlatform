@@ -2,7 +2,7 @@ package dev.gamified.GamifiedPlatform.services.user;
 
 import dev.gamified.GamifiedPlatform.domain.Scopes;
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.dtos.request.UserRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
@@ -96,13 +96,14 @@ public class CreateUserService {
             case ROLE_USER -> List.of(
                     "profile:read", "profile:write", "profile:delete",
                     "character:read", "character:write", "levels:read",
-                    "quests:read", "quests:complete", "achievements:read"
+                    "quests:read", "quests:initiate", "quests:complete", "achievements:read"
             );
             case ROLE_MENTOR -> List.of(
                     "users:read",
                     "profile:read", "profile:write", "profile:delete",
                     "character:read", "character:write",
                     "quests:read", "quests:write", "quests:complete",
+                    "quests:evaluate", "pending-quests:read", "my-evaluations:read",
                     "achievements:read"
             );
             case ROLE_ADMIN -> List.of("admin:all");

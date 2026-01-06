@@ -2,7 +2,7 @@ package dev.gamified.GamifiedPlatform.services.user;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.dtos.request.UserUpdateRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserUpdateRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;

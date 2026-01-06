@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.mapper;
 
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.dtos.request.UserRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import lombok.experimental.UtilityClass;
 
