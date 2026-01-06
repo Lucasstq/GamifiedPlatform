@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.dtos.request;
+package dev.gamified.GamifiedPlatform.dtos.request.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

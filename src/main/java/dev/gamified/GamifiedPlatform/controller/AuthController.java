@@ -1,8 +1,8 @@
 package dev.gamified.GamifiedPlatform.controller;
 
-import dev.gamified.GamifiedPlatform.dtos.request.LoginRequest;
-import dev.gamified.GamifiedPlatform.dtos.request.ResendVerificationEmailRequest;
-import dev.gamified.GamifiedPlatform.dtos.request.UserRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.auth.LoginRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.auth.ResendVerificationEmailRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.LoginResponse;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import dev.gamified.GamifiedPlatform.services.auth.AuthService;

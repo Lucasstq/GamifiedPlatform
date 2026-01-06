@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.dtos.request;
+package dev.gamified.GamifiedPlatform.dtos.request.user;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
