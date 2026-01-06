@@ -36,3 +36,6 @@ build/
 ### Security Keys ###
 authz.pem
 authz.pub
+
+### Requirements ###
+requisitos.txt
