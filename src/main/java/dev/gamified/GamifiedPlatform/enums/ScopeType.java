@@ -22,7 +22,13 @@ public enum ScopeType {
     // Permissões de missões
     QUESTS_READ("quests:read", "Ler missões"),
     QUESTS_WRITE("quests:write", "Criar/atualizar missões"),
+    QUESTS_INITIATE("quests:initiate", "Iniciar missões"),
     QUESTS_COMPLETE("quests:complete", "Completar missões"),
+
+    //Exclusivo de mentores ou administradores
+    QUESTS_EVALUATE("quests:evaluate", "Avaliar missões"),
+    PEDING_QUESTS_READ("pending-quests:read", "Ler missões pendentes de avaliação"),
+    MY_EVALUATIONS_READ("my-evaluations:read", "Ler minhas avaliações de missões"),
 
     // Permissões de níveis
     LEVELS_READ("levels:read", "Ler níveis"),
@@ -53,6 +59,7 @@ public enum ScopeType {
                 CHARACTER_READ,
                 CHARACTER_WRITE,
                 QUESTS_READ,
+                QUESTS_INITIATE,
                 QUESTS_COMPLETE,
                 ACHIEVEMENTS_READ
         };
@@ -70,6 +77,10 @@ public enum ScopeType {
                 CHARACTER_READ,
                 CHARACTER_WRITE,
                 QUESTS_READ,
+                QUESTS_INITIATE,
+                QUESTS_EVALUATE,
+                MY_EVALUATIONS_READ,
+                PEDING_QUESTS_READ,
                 QUESTS_WRITE,
                 QUESTS_COMPLETE,
                 ACHIEVEMENTS_READ

@@ -1,0 +1,17 @@
+INSERT INTO tb_scopes (name)
+VALUES ('profile:read'),
+       ('profile:write'),
+       ('profile:delete'),
+       ('character:read'),
+       ('character:write'),
+       ('levels:read'),
+       ('quests:read'),
+       ('quests:write'),
+       ('quests:complete'),
+       ('quests:initiate'),
+       ('quests:evaluate'),
+       ('pending-quests:read'),
+       ('my-evaluations:read'),
+       ('achievements:read'),
+       ('users:read'),
+       ('admin:all') ON CONFLICT (name) DO NOTHING;
