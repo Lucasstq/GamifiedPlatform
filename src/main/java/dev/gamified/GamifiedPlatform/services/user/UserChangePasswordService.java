@@ -2,7 +2,7 @@ package dev.gamified.GamifiedPlatform.services.user;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.dtos.request.UserChangePasswordRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserChangePasswordRequest;
 import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
