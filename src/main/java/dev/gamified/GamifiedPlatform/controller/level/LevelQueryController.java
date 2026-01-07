@@ -2,9 +2,12 @@ package dev.gamified.GamifiedPlatform.controller.level;
 
 import dev.gamified.GamifiedPlatform.config.annotations.CanReadLevels;
 import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
-import dev.gamified.GamifiedPlatform.enums.DifficutyLevel;
+import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import dev.gamified.GamifiedPlatform.services.levels.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +24,7 @@ public class LevelQueryController {
     private final GetAllLevelsService getAllLevels;
     private final LevelByIdService getLevelById;
     private final LevelByOrderService getLevelByOrder;
-    private final GetLevelByDifficutyService getLevelByDifficulty;
+    private final GetLevelByDifficultyService getLevelByDifficulty;
     private final LevelByUserAuthenticate getLevelByAuthenticatedUser;
     private final GetNextLevelService getNextLevel;
     private final GetUnlockLevelsService getUnlockLevels;
@@ -29,13 +32,14 @@ public class LevelQueryController {
     private final GetSystemStatsService getSystemStats;
 
     /**
-     * GET /levels - Listar todos os níveis
+     * GET /levels - Listar todos os níveis paginados
      */
     @GetMapping
     @CanReadLevels
-    public ResponseEntity<List<LevelResponse>> getAllLevels() {
-        List<LevelResponse> levels = getAllLevels.execute();
-        return ResponseEntity.ok(levels);
+    public ResponseEntity<Page<LevelResponse>> getAllLevels(
+            @PageableDefault(size = 20, sort = "orderLevel") Pageable pageable
+    ) {
+        return ResponseEntity.ok(getAllLevels.execute(pageable));
     }
 
     /**
@@ -63,7 +67,7 @@ public class LevelQueryController {
      */
     @GetMapping("/difficulty/{difficulty}")
     @CanReadLevels
-    public ResponseEntity<List<LevelResponse>> getLevelsByDifficulty(@PathVariable DifficutyLevel difficulty) {
+    public ResponseEntity<List<LevelResponse>> getLevelsByDifficulty(@PathVariable DifficultyLevel difficulty) {
         List<LevelResponse> levels = getLevelByDifficulty.execute(difficulty);
         return ResponseEntity.ok(levels);
     }
