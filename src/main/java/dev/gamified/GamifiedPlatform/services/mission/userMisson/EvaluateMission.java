@@ -8,11 +8,12 @@ import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionEvaluationReque
 import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
 import dev.gamified.GamifiedPlatform.enums.Roles;
-import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
+import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
 import dev.gamified.GamifiedPlatform.repository.*;
+import dev.gamified.GamifiedPlatform.services.playerCharacter.AddXpToCharacterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ public class EvaluateMission {
     private final UserMissionRepository userMissionRepository;
     private final UserRepository userRepository;
     private final PlayerCharacterRepository playerCharacterRepository;
+    private final AddXpToCharacterService addXpToCharacterService;
 
     @Transactional
     public UserMissionResponse execute(Long userMissionId, Long mentorId, MissionEvaluationRequest request) {
@@ -47,7 +49,7 @@ public class EvaluateMission {
 
     private UserMission findAndValidateUserMission(Long userMissionId) {
         UserMission userMission = userMissionRepository.findById(userMissionId)
-                .orElseThrow(() -> new ResourseNotFoundException("Mission submission not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mission submission not found"));
 
         if (userMission.getStatus() != MissionStatus.AWAITING_EVALUATION) {
             throw new BusinessException("Only questions that are pending evaluation can be assessed");
@@ -59,13 +61,13 @@ public class EvaluateMission {
     // Verifica se o usuário autenticado é o dono do recurso ou um admin
     private void isOwnerOrAdmin(Long userId) {
         if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AcessDeniedException("You do not have permission to update this user");
+            throw new AccessDeniedException("You do not have permission to update this user");
         }
     }
 
     private User validateMentor(Long mentorId) {
         User mentor = userRepository.findById(mentorId)
-                .orElseThrow(() -> new ResourseNotFoundException("Mentor not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Mentor not found"));
 
         if (mentor.getRole() != Roles.ROLE_MENTOR) {
             throw new BusinessException("User is not authorized to evaluate missions");
@@ -105,9 +107,9 @@ public class EvaluateMission {
 
     private void grantXpToCharacter(UserMission userMission) {
         PlayerCharacter character = playerCharacterRepository.findByUserId(userMission.getUser().getId())
-                .orElseThrow(() -> new ResourseNotFoundException("Character not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
 
-        character.addXp(userMission.getMission().getXpReward());
-        playerCharacterRepository.save(character);
+        // Usa o service para adicionar XP e recalcular nível baseado na tabela tb_levels
+        addXpToCharacterService.execute(character.getId(), userMission.getMission().getXpReward());
     }
 }

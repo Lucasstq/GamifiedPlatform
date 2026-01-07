@@ -6,7 +6,7 @@ import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionSubmissionReque
 import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
 import dev.gamified.GamifiedPlatform.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class SubmitMission {
         validateUserPermission(userId);
 
         UserMission userMission = userMissionRepository.findByUserIdAndMissionId(userId, missionId)
-                .orElseThrow(() -> new ResourseNotFoundException("Mission not started by user."));
+                .orElseThrow(() -> new ResourceNotFoundException("Mission not started by user."));
 
         userCanSubmitMission(userMission);
 
