@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
 import dev.gamified.GamifiedPlatform.domain.Levels;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class DeleteLevelService {
      */
     public void execute(Long id) {
         Levels level = levelRepository.findById(id)
-                .orElseThrow(() -> new ResourseNotFoundException("Level with id " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Level with id " + id + " not found"));
         levelRepository.delete(level);
     }
 

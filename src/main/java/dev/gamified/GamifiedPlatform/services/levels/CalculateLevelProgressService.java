@@ -2,7 +2,7 @@ package dev.gamified.GamifiedPlatform.services.levels;
 
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class CalculateLevelProgressService {
      */
     public Double execute(Integer currentXp, Integer currentOrderLevel) {
         Levels currentLevel = levelRepository.findByOrderLevel(currentOrderLevel)
-                .orElseThrow(() -> new ResourseNotFoundException("Current level not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Current level not found"));
 
         try {
             LevelResponse nextLevel = getNextLevel.execute(currentOrderLevel);
@@ -30,7 +30,7 @@ public class CalculateLevelProgressService {
 
             double progress = (double) xpInCurrentLevel / xpNeededForNextLevel * 100;
             return Math.min(100.0, Math.max(0.0, progress));
-        } catch (ResourseNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             // Está no nível máximo
             return 100.0;
         }

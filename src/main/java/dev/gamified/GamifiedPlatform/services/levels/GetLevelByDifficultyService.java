@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class GetLevelByDifficutyService {
+public class GetLevelByDifficultyService {
 
     private final LevelRepository levelRepository;
 
