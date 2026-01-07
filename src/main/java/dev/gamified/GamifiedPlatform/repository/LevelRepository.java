@@ -1,7 +1,9 @@
 package dev.gamified.GamifiedPlatform.repository;
 
 import dev.gamified.GamifiedPlatform.domain.Levels;
-import dev.gamified.GamifiedPlatform.enums.DifficutyLevel;
+import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,7 +15,9 @@ public interface LevelRepository extends JpaRepository<Levels, Long> {
 
     Optional<Levels> findByOrderLevel(Integer orderLevel);
 
-    List<Levels> findByDifficultyLevel(DifficutyLevel difficultyLevel);
+    List<Levels> findByDifficultyLevel(DifficultyLevel difficultyLevel);
+
+    Page<Levels> findAllByOrderByOrderLevelAsc(Pageable pageable);
 
     List<Levels> findAllByOrderByOrderLevelAsc();
 

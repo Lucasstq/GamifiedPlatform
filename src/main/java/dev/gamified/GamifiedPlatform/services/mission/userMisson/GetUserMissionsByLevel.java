@@ -6,8 +6,8 @@ import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.domain.UserMission;
 import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
-import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import dev.gamified.GamifiedPlatform.repository.MissionRepository;
@@ -48,16 +48,16 @@ public class GetUserMissionsByLevel {
     // Verifica se o usuário autenticado é o dono do recurso ou um admin
     private void isOwnerOrAdmin(Long userId) {
         if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AcessDeniedException("You do not have permission to update this user");
+            throw new AccessDeniedException("You do not have permission to update this user");
         }
     }
 
     private void findResources(Long userId, Long levelId) {
         userRepository.findById(userId)
-                .orElseThrow(() -> new ResourseNotFoundException("User not found for ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found for ID: " + userId));
 
         levelRepository.findById(levelId)
-                .orElseThrow(() -> new ResourseNotFoundException("Level not found for ID: " + levelId));
+                .orElseThrow(() -> new ResourceNotFoundException("Level not found for ID: " + levelId));
     }
 
     private List<UserMission> findUserMissions(Long userId, Long levelId) {

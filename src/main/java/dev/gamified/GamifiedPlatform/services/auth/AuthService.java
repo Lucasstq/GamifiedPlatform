@@ -6,6 +6,7 @@ import dev.gamified.GamifiedPlatform.dtos.request.auth.LoginRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.LoginResponse;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
+import dev.gamified.GamifiedPlatform.services.security.RateLimitService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -23,14 +24,26 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtEncoder jwtEncoder;
+    private final RateLimitService rateLimitService;
 
     public LoginResponse authenticate(LoginRequest request) {
+        // Verifica rate limiting antes de processar login
+        if (!rateLimitService.isLoginAllowed(request.username())) {
+            long resetTime = rateLimitService.getResetTime("login:" + request.username());
+            throw new BusinessException(
+                "Too many login attempts. Please try again in " + (resetTime / 60) + " minutes"
+            );
+        }
+
         User user = userRepository.findUserByUsername(request.username())
                 .orElseThrow(() -> new BusinessException("Invalid username or password"));
 
         isPasswordCorrect(request.password(), user.getPassword());
         isEmailVerified(user);
         isUserActive(user);
+
+        // Login bem-sucedido - reseta o contador de tentativas
+        rateLimitService.reset("login:" + request.username());
 
         String token = generateToken(user);
 

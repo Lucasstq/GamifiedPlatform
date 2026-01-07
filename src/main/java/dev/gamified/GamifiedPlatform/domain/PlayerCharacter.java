@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.domain;
 
+import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,9 +23,11 @@ public class PlayerCharacter {
     private String name;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer level = 1;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer xp = 0;
 
     @Column(name = "created_at")
@@ -37,17 +40,13 @@ public class PlayerCharacter {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    public void calculateLevel() {
-        if (xp >= 15000) this.level = 6;
-        else if (xp >= 10000) this.level = 5;
-        else if (xp >= 6000) this.level = 4;
-        else if (xp >= 3000) this.level = 3;
-        else if (xp >= 1000) this.level = 2;
-        else this.level = 1;
-    }
-
+    /*
+     * Adiciona XP ao personagem.
+     */
     public void addXp(Integer xpToAdd) {
+        if (xpToAdd == null || xpToAdd < 0) {
+            throw new BusinessException("XP to add must be a positive number");
+        }
         this.xp += xpToAdd;
-        calculateLevel();
     }
 }

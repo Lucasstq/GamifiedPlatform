@@ -1,6 +1,6 @@
 package dev.gamified.GamifiedPlatform.dtos.response;
 
-import dev.gamified.GamifiedPlatform.enums.DifficutyLevel;
+import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -14,7 +14,7 @@ public record LevelResponse(
         String description,
         Integer xpRequired,
         String iconUrl,
-        DifficutyLevel difficultyLevel,
+        DifficultyLevel difficultyLevel,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

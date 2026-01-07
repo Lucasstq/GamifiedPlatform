@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
 import dev.gamified.GamifiedPlatform.domain.Levels;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class CanUnlockLevelService {
      */
     public boolean execute(Integer currentXp, Long levelId) {
         Levels level = levelRepository.findById(levelId)
-                .orElseThrow(() -> new ResourseNotFoundException("Level not found with id: " + levelId));
+                .orElseThrow(() -> new ResourceNotFoundException("Level not found with id: " + levelId));
         return currentXp >= level.getXpRequired();
     }
 

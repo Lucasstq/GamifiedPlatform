@@ -3,8 +3,8 @@ package dev.gamified.GamifiedPlatform.services.mission.userMisson;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.dtos.response.MissionProgressResponse;
-import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +50,7 @@ public class GetMissionsProgress {
 
     private void validateUserPermission(Long userId) {
         if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AcessDeniedException("You do not have permission this feature");
+            throw new AccessDeniedException("You do not have permission this feature");
         }
     }
 
@@ -60,11 +60,11 @@ public class GetMissionsProgress {
      *
      * @param levelId O ID do nível a ser buscado
      * @return O objeto Levels encontrado
-     * @throws ResourseNotFoundException se o nível não existir
+     * @throws ResourceNotFoundException se o nível não existir
      */
     private Levels findLevel(Long levelId) {
         return levelRepository.findById(levelId)
-                .orElseThrow(() -> new ResourseNotFoundException("Level not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Level not found"));
     }
 
     /**

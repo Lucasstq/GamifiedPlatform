@@ -7,9 +7,9 @@ import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.domain.UserMission;
 import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
-import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
+import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
 import dev.gamified.GamifiedPlatform.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -41,8 +41,8 @@ public class StartMissions {
      * @param userId O ID do usuário que iniciará a missão
      * @param missionId O ID da missão a ser iniciada
      * @return UserMissionResponse com os dados da missão iniciada
-     * @throws AcessDeniedException se o usuário não tiver permissão
-     * @throws ResourseNotFoundException se usuário ou missão não forem encontrados
+     * @throws AccessDeniedException se o usuário não tiver permissão
+     * @throws ResourceNotFoundException se usuário ou missão não forem encontrados
      * @throws BusinessException se a missão não puder ser iniciada no estado atual
      * @throws IllegalStateException se o usuário não tiver acesso ao nível da missão
      */
@@ -73,11 +73,11 @@ public class StartMissions {
      * Verifica se é o dono do recurso ou um administrador.
      *
      * @param userId O ID do usuário a ser validado
-     * @throws AcessDeniedException se o usuário não tiver permissão
+     * @throws AccessDeniedException se o usuário não tiver permissão
      */
     private void validateUserPermission(Long userId) {
         if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AcessDeniedException("You do not have permission this feature");
+            throw new AccessDeniedException("You do not have permission this feature");
         }
     }
 
@@ -86,11 +86,11 @@ public class StartMissions {
      *
      * @param userId O ID do usuário a ser buscado
      * @return O objeto User encontrado
-     * @throws ResourseNotFoundException se o usuário não for encontrado
+     * @throws ResourceNotFoundException se o usuário não for encontrado
      */
     private User findUser(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourseNotFoundException("User not found by ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found by ID: " + userId));
     }
 
     /**
@@ -98,11 +98,11 @@ public class StartMissions {
      *
      * @param missionId O ID da missão a ser buscada
      * @return O objeto Mission encontrado
-     * @throws ResourseNotFoundException se a missão não for encontrada
+     * @throws ResourceNotFoundException se a missão não for encontrada
      */
     private Mission findMission(Long missionId) {
         return missionRepository.findById(missionId)
-                .orElseThrow(() -> new ResourseNotFoundException("Mission not found by ID: " + missionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Mission not found by ID: " + missionId));
     }
 
     /**
@@ -164,15 +164,15 @@ public class StartMissions {
      *
      * @param userId O ID do usuário a ser verificado
      * @param missionId O ID da missão a ser verificada
-     * @throws ResourseNotFoundException se o personagem ou missão não forem encontrados
+     * @throws ResourceNotFoundException se o personagem ou missão não forem encontrados
      * @throws IllegalStateException se o usuário não tiver acesso ao nível da missão
      */
     private void checkUserAccessToMissionLevel(Long userId, Long missionId) {
         PlayerCharacter character = playerCharacterRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourseNotFoundException("Character not found for user"));
+                .orElseThrow(() -> new ResourceNotFoundException("Character not found for user"));
 
         Mission mission = missionRepository.findById(missionId)
-                .orElseThrow(() -> new ResourseNotFoundException("Mission not found by ID: " + missionId));
+                .orElseThrow(() -> new ResourceNotFoundException("Mission not found by ID: " + missionId));
 
         if (character.getLevel() < mission.getLevel().getOrderLevel()) {
             throw new IllegalStateException("You don't have access to this level yet.");

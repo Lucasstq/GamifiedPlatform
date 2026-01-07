@@ -19,6 +19,23 @@ spring:
     enabled: true
     locations: classpath:db/migration
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      timeout: 60000
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1 hora em milissegundos
+      cache-null-values: false
+
   mail:
     host: smtp.gmail.com
     port: 587
@@ -42,3 +59,8 @@ jwt:
     key: classpath:authz.pub
   private:
     key: classpath:authz.pem
+
+logging:
+  level:
+    dev.gamified: DEBUG
+    org.springframework: INFO

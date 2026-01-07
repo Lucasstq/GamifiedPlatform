@@ -1,6 +1,9 @@
 package dev.gamified.GamifiedPlatform.enums;
 
-public enum DifficutyLevel {
+import lombok.Getter;
+
+@Getter
+public enum DifficultyLevel {
     EASY("Easy"),
     MEDIUM("Medium"),
     HARD("Hard"),
@@ -8,7 +11,7 @@ public enum DifficutyLevel {
 
     private String description;
 
-    private DifficutyLevel(String description) {
+    private DifficultyLevel(String description) {
         this.description = description;
 
     }

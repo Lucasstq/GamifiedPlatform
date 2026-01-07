@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
 import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class CalculateXpToNextLevelService {
             LevelResponse nextLevel = getNextLevel.execute(currentOrderLevel);
             int xpNeeded = nextLevel.xpRequired() - currentXp;
             return Math.max(0, xpNeeded); // Garante que não retorna valor negativo
-        } catch (ResourseNotFoundException e) {
+        } catch (ResourceNotFoundException e) {
             return 0; // Já está no nível máximo
         }
     }
