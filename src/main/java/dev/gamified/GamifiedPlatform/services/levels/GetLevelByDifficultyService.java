@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
 import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
-import dev.gamified.GamifiedPlatform.enums.DifficutyLevel;
+import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import dev.gamified.GamifiedPlatform.mapper.LevelMapper;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class GetLevelByDifficutyService {
     /**
      * Busca níveis por dificuldade (EASY, MEDIUM, HARD, EXPERT)
      */
-    public List<LevelResponse> execute(DifficutyLevel difficulty) {
+    public List<LevelResponse> execute(DifficultyLevel difficulty) {
         return levelRepository.findByDifficultyLevel(difficulty)
                 .stream()
                 .map(LevelMapper::toResponse)
