@@ -4,8 +4,8 @@ import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
-import dev.gamified.GamifiedPlatform.exceptions.AcessDeniedException;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class UserByIdService {
         isOwnerOrAdmin(userId);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourseNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return UserMapper.toResponse(user);
     }
 
@@ -30,7 +30,7 @@ public class UserByIdService {
     // Permite acesso se for o próprio usuário, admin ou mentor
     private void isOwnerOrAdmin(Long userId) {
         if (!SecurityUtils.isResourceOwnerOrAdmin(userId) && !SecurityUtils.hasRole(Roles.ROLE_MENTOR)) {
-            throw new AcessDeniedException("You do not have permission to view this user");
+            throw new AccessDeniedException("You do not have permission to view this user");
         }
     }
 

@@ -5,7 +5,7 @@ import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
-import dev.gamified.GamifiedPlatform.exceptions.ResourseNotFoundException;
+import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class UserByUsernameService {
 
     public UserResponse execute(String username) {
         User user = userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new ResourseNotFoundException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         isOwnerOrAdmin(user.getId());
 
