@@ -1,6 +1,6 @@
 package dev.gamified.GamifiedPlatform.domain;
 
-import dev.gamified.GamifiedPlatform.enums.DifficutyLevel;
+import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,9 +39,10 @@ public class Levels {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "difficulty_level", nullable = false)
-    private DifficutyLevel difficultyLevel;
+    private DifficultyLevel difficultyLevel;
 
     @Column(name = "created_at")
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
