@@ -1,6 +1,6 @@
 package dev.gamified.GamifiedPlatform.dtos.request;
 
-import dev.gamified.GamifiedPlatform.enums.DifficutyLevel;
+import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +24,6 @@ public record LevelRequest(
         Integer xpRequired,
         String iconUrl,
         @NotNull(message = "Difficulty level is required")
-        DifficutyLevel difficultyLevel
+        DifficultyLevel difficultyLevel
 ) {
 }
