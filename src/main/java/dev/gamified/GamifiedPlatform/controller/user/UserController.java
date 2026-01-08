@@ -6,6 +6,7 @@ import dev.gamified.GamifiedPlatform.config.annotations.CanWriteProfile;
 import dev.gamified.GamifiedPlatform.dtos.request.user.DeleteUserRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.user.UserChangePasswordRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.user.UserUpdateRequest;
+import dev.gamified.GamifiedPlatform.dtos.response.PublicUserProfileResponse;
 import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
 import dev.gamified.GamifiedPlatform.services.user.*;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ public class UserController {
     private final UserByUsernameService getUserByUsername;
     private final UserChangePasswordService changePasswordService;
     private final DeleteUserService deleteUser;
+    private final GetPublicUserProfileService getPublicUserProfileService;
 
     @PutMapping("/{id}")
     @CanWriteProfile
@@ -41,6 +43,12 @@ public class UserController {
     @CanReadUsers
     public ResponseEntity<UserResponse> getUserByUsername(@RequestParam String username) {
         return ResponseEntity.ok(getUserByUsername.execute(username));
+    }
+
+    @GetMapping("/{id}/profile")
+    @CanReadUsers
+    public ResponseEntity<PublicUserProfileResponse> getPublicProfile(@PathVariable Long id) {
+        return ResponseEntity.ok(getPublicUserProfileService.execute(id));
     }
 
     @PatchMapping("/{id}/change-password")
