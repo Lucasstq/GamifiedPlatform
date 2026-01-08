@@ -119,5 +119,13 @@ public class RateLimitService {
     public boolean isIpAllowed(String ipAddress) {
         return isAllowed("ip:" + ipAddress, 100, Duration.ofMinutes(1));
     }
+
+    /**
+     * Rate limiting para submissão de boss.
+     * Limite: 3 tentativas a cada 1 hora
+     */
+    public boolean isBossSubmissionAllowed(Long userId) {
+        return isAllowed("boss_submission:" + userId, 3, Duration.ofHours(1));
+    }
 }
 
