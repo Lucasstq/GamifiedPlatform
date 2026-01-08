@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.dtos.response;
+package dev.gamified.GamifiedPlatform.dtos.response.user;
 
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
 import lombok.Builder;

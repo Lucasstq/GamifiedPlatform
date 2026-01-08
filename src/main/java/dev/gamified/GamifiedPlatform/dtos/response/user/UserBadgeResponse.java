@@ -1,5 +1,6 @@
-package dev.gamified.GamifiedPlatform.dtos.response;
+package dev.gamified.GamifiedPlatform.dtos.response.user;
 
+import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeResponse;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
