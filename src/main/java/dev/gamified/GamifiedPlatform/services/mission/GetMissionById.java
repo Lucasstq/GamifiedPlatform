@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.mission;
 
 import dev.gamified.GamifiedPlatform.domain.Mission;
-import dev.gamified.GamifiedPlatform.dtos.response.MissionResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.missions.MissionResponse;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
 import dev.gamified.GamifiedPlatform.repository.MissionRepository;

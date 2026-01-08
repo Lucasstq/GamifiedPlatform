@@ -1,17 +1,16 @@
 package dev.gamified.GamifiedPlatform.services.badge;
 
-import dev.gamified.GamifiedPlatform.domain.Badge;
-import dev.gamified.GamifiedPlatform.dtos.response.BadgeResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeResponse;
 import dev.gamified.GamifiedPlatform.mapper.BadgeMapper;
 import dev.gamified.GamifiedPlatform.repository.BadgeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /*
  * Serviço para buscar todos os badges disponíveis no sistema.
@@ -26,18 +25,16 @@ public class GetAllBadgesService {
     private final BadgeRepository badgeRepository;
 
     /*
-     * Busca todos os badges disponíveis no sistema.
+     * Busca todos os badges disponíveis no sistema paginados.
      * Resultado é cacheado para melhor performance.
      */
-    @Cacheable(value = "allBadges")
+    @Cacheable(value = "allBadges", key = "#pageable.pageNumber + '_' + #pageable.pageSize")
     @Transactional(readOnly = true)
-    public List<BadgeResponse> execute() {
-        log.info("Fetching all badges from database");
+    public Page<BadgeResponse> execute(Pageable pageable) {
+        log.info("Fetching all badges from database - página: {}, tamanho: {}",
+                pageable.getPageNumber(), pageable.getPageSize());
 
-        List<Badge> badges = badgeRepository.findAll();
-
-        return badges.stream()
-                .map(BadgeMapper::toResponse)
-                .toList();
+        return badgeRepository.findAll(pageable)
+                .map(BadgeMapper::toResponse);
     }
 }

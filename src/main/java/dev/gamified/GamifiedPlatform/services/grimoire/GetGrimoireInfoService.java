@@ -5,7 +5,7 @@ import dev.gamified.GamifiedPlatform.domain.Grimoire;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.dtos.response.GrimoireResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.grimoire.GrimoireResponse;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.GrimoireDownloadRepository;
 import dev.gamified.GamifiedPlatform.repository.GrimoireRepository;

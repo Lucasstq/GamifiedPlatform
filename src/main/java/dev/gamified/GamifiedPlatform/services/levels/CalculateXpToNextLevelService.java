@@ -1,6 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

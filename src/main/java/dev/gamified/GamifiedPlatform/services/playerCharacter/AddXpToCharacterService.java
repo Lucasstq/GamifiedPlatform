@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.playerCharacter;
 
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.PlayerCharacterRepository;
 import dev.gamified.GamifiedPlatform.services.levels.CalculateLevelByXpService;

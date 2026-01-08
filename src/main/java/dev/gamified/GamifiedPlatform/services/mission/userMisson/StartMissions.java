@@ -5,7 +5,7 @@ import dev.gamified.GamifiedPlatform.domain.Mission;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.domain.UserMission;
-import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;

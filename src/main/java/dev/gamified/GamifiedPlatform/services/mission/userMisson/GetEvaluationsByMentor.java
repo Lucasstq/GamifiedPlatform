@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.mission.userMisson;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
-import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
 import dev.gamified.GamifiedPlatform.repository.*;

@@ -3,12 +3,13 @@ package dev.gamified.GamifiedPlatform.services.mission.userMisson;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.UserMission;
 import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionSubmissionRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
 import dev.gamified.GamifiedPlatform.repository.*;
+import dev.gamified.GamifiedPlatform.services.security.RateLimitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,17 @@ import java.time.LocalDateTime;
 public class SubmitMission {
 
     private final UserMissionRepository userMissionRepository;
+    private final RateLimitService rateLimitService;
 
     @Transactional
     public UserMissionResponse execute(Long missionId, MissionSubmissionRequest request) {
 
         Long userId = SecurityUtils.getCurrentUserId()
                 .orElseThrow(() -> new ResourceNotFoundException("User not authenticated"));
+
+        if (!rateLimitService.isMissionSubmissionAllowed(userId)) {
+            throw new BusinessException("Rate limit exceeded. You can only submit 10 missions every 5 minutes.");
+        }
 
         log.info("User {} submitting mission {}", userId, missionId);
 

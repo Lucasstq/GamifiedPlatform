@@ -1,13 +1,15 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.mapper.LevelMapper;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,14 +18,20 @@ public class GetUnlockLevelsService {
     private final LevelRepository levelRepository;
 
     /**
-     * Retorna todos os níveis que o jogador desbloqueou até agora
+     * Retorna todos os níveis que o jogador desbloqueou até agora paginados
      */
-    public List<LevelResponse> execute(Integer currentXp) {
-        return levelRepository.findAllByOrderByOrderLevelAsc()
+    public Page<LevelResponse> execute(Integer currentXp, Pageable pageable) {
+        List<LevelResponse> allUnlockedLevels = levelRepository.findAllByOrderByOrderLevelAsc()
                 .stream()
                 .filter(level -> currentXp >= level.getXpRequired())
                 .map(LevelMapper::toResponse)
-                .collect(Collectors.toList());
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allUnlockedLevels.size());
+
+        List<LevelResponse> pageContent = allUnlockedLevels.subList(start, end);
+        return new PageImpl<>(pageContent, pageable, allUnlockedLevels.size());
     }
 
 }

@@ -3,7 +3,7 @@ package dev.gamified.GamifiedPlatform.services.boss;
 import dev.gamified.GamifiedPlatform.domain.Boss;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.dtos.request.boss.BossCreateRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.BossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.BossResponse;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.BossMapper;

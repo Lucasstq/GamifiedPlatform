@@ -5,7 +5,7 @@ import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.domain.UserBoss;
 import dev.gamified.GamifiedPlatform.dtos.request.boss.BossFightEvaluationRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.UserBossResponse;
 import dev.gamified.GamifiedPlatform.enums.BossFightStatus;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
@@ -14,6 +14,7 @@ import dev.gamified.GamifiedPlatform.repository.PlayerCharacterRepository;
 import dev.gamified.GamifiedPlatform.repository.UserBossRepository;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import dev.gamified.GamifiedPlatform.services.badge.UnlockBadgeService;
+import dev.gamified.GamifiedPlatform.services.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class EvaluateBossFightService {
     private final PlayerCharacterRepository playerCharacterRepository;
     private final UserRepository userRepository;
     private final UnlockBadgeService unlockBadgeService;
+    private final NotificationService notificationService;
 
     /*
      * Avalia uma submissão de luta contra um boss.
@@ -92,12 +94,26 @@ public class EvaluateBossFightService {
         userBoss.setEvaluatedBy(evaluator);
         userBoss.setEvaluatedAt(LocalDateTime.now());
         userBoss.setCompletedAt(LocalDateTime.now());
+
+        notificationService.createBossEvaluatedNotification(
+                userBoss.getUser(),
+                userBoss.getBoss().getName(),
+                true,
+                userBoss.getBoss().getId()
+        );
     }
 
     private void rejectBossFight(UserBoss userBoss, User evaluator) {
         userBoss.setStatus(BossFightStatus.FAILED);
         userBoss.setEvaluatedBy(evaluator);
         userBoss.setEvaluatedAt(LocalDateTime.now());
+
+        notificationService.createBossEvaluatedNotification(
+                userBoss.getUser(),
+                userBoss.getBoss().getName(),
+                false,
+                userBoss.getBoss().getId()
+        );
     }
 
     private void grantRewards(UserBoss userBoss) {

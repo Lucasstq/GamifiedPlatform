@@ -3,9 +3,9 @@ package dev.gamified.GamifiedPlatform.services.user;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.dtos.response.BadgeProgressResponse;
-import dev.gamified.GamifiedPlatform.dtos.response.PublicUserProfileResponse;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBadgeResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeProgressResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.PublicUserProfileResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserBadgeResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
@@ -15,6 +15,8 @@ import dev.gamified.GamifiedPlatform.services.badge.GetBadgeProgressService;
 import dev.gamified.GamifiedPlatform.services.badge.GetUserBadgesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +48,9 @@ public class GetPublicUserProfileService {
 
         User user = findUser(userId);
         PlayerCharacter character = findPlayerCharacter(userId);
-        List<UserBadgeResponse> badges = getUserBadgesService.execute(userId);
+        // Buscar todos os badges do usuário (máximo de 100 para o perfil público)
+        Page<UserBadgeResponse> badgesPage = getUserBadgesService.execute(userId, PageRequest.of(0, 100));
+        List<UserBadgeResponse> badges = badgesPage.getContent();
         BadgeProgressResponse progress = getBadgeProgressService.execute(userId);
 
         return PublicUserProfileResponse.builder()

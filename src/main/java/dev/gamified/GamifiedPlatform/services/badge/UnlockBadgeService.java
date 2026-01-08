@@ -3,13 +3,14 @@ package dev.gamified.GamifiedPlatform.services.badge;
 import dev.gamified.GamifiedPlatform.domain.Badge;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.domain.UserBadge;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBadgeResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserBadgeResponse;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.BadgeMapper;
 import dev.gamified.GamifiedPlatform.repository.BadgeRepository;
 import dev.gamified.GamifiedPlatform.repository.UserBadgeRepository;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
+import dev.gamified.GamifiedPlatform.services.notification.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class UnlockBadgeService {
     private final UserBadgeRepository userBadgeRepository;
     private final BadgeRepository badgeRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     /*
      * Desbloqueia um badge para um usuário ao derrotar um boss.
@@ -56,6 +58,13 @@ public class UnlockBadgeService {
                 .build();
 
         UserBadge savedUserBadge = userBadgeRepository.save(userBadge);
+
+        notificationService.createBadgeUnlockedNotification(
+                user,
+                badge.getName(),
+                badge.getDescription(),
+                badge.getId()
+        );
 
         log.info("Badge '{}' unlocked for user {}", badge.getName(), userId);
 

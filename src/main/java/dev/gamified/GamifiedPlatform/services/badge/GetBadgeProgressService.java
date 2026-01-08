@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.badge;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
-import dev.gamified.GamifiedPlatform.dtos.response.BadgeProgressResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeProgressResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;

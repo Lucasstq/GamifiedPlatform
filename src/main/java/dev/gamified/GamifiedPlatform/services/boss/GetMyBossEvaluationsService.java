@@ -2,7 +2,7 @@ package dev.gamified.GamifiedPlatform.services.boss;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.UserBoss;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.UserBossResponse;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.mapper.BossMapper;
 import dev.gamified.GamifiedPlatform.repository.UserBossRepository;
@@ -35,7 +35,7 @@ public class GetMyBossEvaluationsService {
         log.info("Getting boss evaluations made by mentor {}", mentorId);
 
         checkPermission(mentorId);
-        Page<UserBoss> evaluatedBosses = userBossRepository.findByEvaluatedById(mentorId, pageable);
+        Page<UserBoss> evaluatedBosses = userBossRepository.findEvaluationsByMentor(mentorId, pageable);
 
         return evaluatedBosses.map(BossMapper::toUserBossResponse);
     }

@@ -4,7 +4,7 @@ import dev.gamified.GamifiedPlatform.domain.RefreshToken;
 import dev.gamified.GamifiedPlatform.domain.Scopes;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.request.auth.LoginRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.LoginResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.login.LoginResponse;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import dev.gamified.GamifiedPlatform.services.security.RateLimitService;

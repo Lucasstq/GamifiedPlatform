@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
 import dev.gamified.GamifiedPlatform.domain.Levels;
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import dev.gamified.GamifiedPlatform.mapper.LevelMapper;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;

@@ -9,11 +9,15 @@ import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import dev.gamified.GamifiedPlatform.services.playerCharacter.DeletePlayerCharacterService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DeleteUserService {
 
     private final UserRepository userRepository;
@@ -28,10 +32,20 @@ public class DeleteUserService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        if (Boolean.TRUE.equals(existingUser.getDeleted())) {
+            throw new ResourceNotFoundException("User already deleted");
+        }
+
         validatePassword(password, existingUser.getPassword());
         deleteAssociatedCharacter(existingUser);
 
-        userRepository.delete(existingUser);
+        // Soft delete
+        existingUser.setDeleted(true);
+        existingUser.setDeletedAt(LocalDateTime.now());
+        existingUser.setActive(false);
+        userRepository.save(existingUser);
+
+        log.info("User {} soft deleted successfully", userId);
     }
 
     // Verifica se o usuário autenticado tem permissão para deletar

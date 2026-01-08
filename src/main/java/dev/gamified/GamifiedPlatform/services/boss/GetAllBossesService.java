@@ -1,6 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.boss;
 
-import dev.gamified.GamifiedPlatform.dtos.response.BossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.BossResponse;
 import dev.gamified.GamifiedPlatform.mapper.BossMapper;
 import dev.gamified.GamifiedPlatform.repository.BossRepository;
 import lombok.RequiredArgsConstructor;

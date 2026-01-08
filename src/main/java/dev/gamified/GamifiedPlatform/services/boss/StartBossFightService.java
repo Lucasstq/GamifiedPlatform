@@ -4,7 +4,7 @@ import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.Boss;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.domain.UserBoss;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.UserBossResponse;
 import dev.gamified.GamifiedPlatform.enums.BossFightStatus;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;

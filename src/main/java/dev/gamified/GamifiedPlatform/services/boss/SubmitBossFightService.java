@@ -3,13 +3,14 @@ package dev.gamified.GamifiedPlatform.services.boss;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.UserBoss;
 import dev.gamified.GamifiedPlatform.dtos.request.boss.BossFightSubmissionRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.UserBossResponse;
 import dev.gamified.GamifiedPlatform.enums.BossFightStatus;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.BossMapper;
 import dev.gamified.GamifiedPlatform.repository.UserBossRepository;
+import dev.gamified.GamifiedPlatform.services.security.RateLimitService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 public class SubmitBossFightService {
 
     private final UserBossRepository userBossRepository;
+    private final RateLimitService rateLimitService;
 
     /*
      * Submete a solução de uma luta contra um boss.
@@ -35,6 +37,10 @@ public class SubmitBossFightService {
 
         Long userId = SecurityUtils.getCurrentUserId()
                 .orElseThrow(() -> new AccessDeniedException("User must be authenticated to submit a boss fight solution"));
+
+        if (!rateLimitService.isBossSubmissionAllowed(userId)) {
+            throw new BusinessException("Rate limit exceeded. You can only submit 3 boss attempts every hour.");
+        }
 
         log.info("User {} submitting boss fight solution for boss {}", userId, bossId);
 

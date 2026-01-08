@@ -4,12 +4,15 @@ import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.dtos.response.RankingResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.ranking.RankingResponse;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import dev.gamified.GamifiedPlatform.repository.PlayerCharacterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
@@ -32,9 +35,10 @@ public class GetRankingByLevelService {
     private final RefreshRankingCacheService refreshRankingCache;
 
     @Transactional
-    public List<RankingResponse> execute(Long levelId, int page, int size) {
+    public Page<RankingResponse> execute(Long levelId, Pageable pageable) {
 
-        log.info("Fetching ranking for level: {} - page: {}, size: {}", levelId, page, size);
+        log.info("Fetching ranking for level: {} - page: {}, size: {}",
+                levelId, pageable.getPageNumber(), pageable.getPageSize());
 
         Levels level = levelRepository.findById(levelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Level not found with id: " + levelId));
@@ -45,18 +49,19 @@ public class GetRankingByLevelService {
         Long cacheSize = zSetOps.size(levelKey);
         if (cacheSize == null || cacheSize == 0) {
             refreshRankingCache.execute();
+            cacheSize = zSetOps.size(levelKey);
         }
 
-        long start = (long) page * size;
-        long end = start + size - 1;
+        long start = pageable.getOffset();
+        long end = start + pageable.getPageSize() - 1;
 
         Set<Object> characterIds = zSetOps.reverseRange(levelKey, start, end);
         if (characterIds == null || characterIds.isEmpty()) {
-            return List.of();
+            return new PageImpl<>(List.of(), pageable, cacheSize != null ? cacheSize : 0);
         }
 
         List<RankingResponse> ranking = new ArrayList<>();
-        int position = (page * size) + 1;
+        int position = (pageable.getPageNumber() * pageable.getPageSize()) + 1;
         Long currentUserId = SecurityUtils.getCurrentUserId().orElse(null);
 
         for (Object characterId : characterIds) {
@@ -84,6 +89,6 @@ public class GetRankingByLevelService {
             }
         }
 
-        return ranking;
+        return new PageImpl<>(ranking, pageable, cacheSize != null ? cacheSize : 0);
     }
 }

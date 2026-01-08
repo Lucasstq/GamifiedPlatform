@@ -2,7 +2,7 @@ package dev.gamified.GamifiedPlatform.services.mission.userMisson;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.Levels;
-import dev.gamified.GamifiedPlatform.dtos.response.MissionProgressResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.missions.MissionProgressResponse;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.*;

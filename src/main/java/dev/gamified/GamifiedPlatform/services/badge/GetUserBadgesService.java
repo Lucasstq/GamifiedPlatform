@@ -1,8 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.badge;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
-import dev.gamified.GamifiedPlatform.domain.UserBadge;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBadgeResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserBadgeResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
@@ -11,11 +10,13 @@ import dev.gamified.GamifiedPlatform.repository.UserBadgeRepository;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /*
  * Serviço para buscar todos os badges conquistados por um usuário.
@@ -30,22 +31,27 @@ public class GetUserBadgesService {
     private final UserRepository userRepository;
 
     /*
-     * Busca todos os badges de um usuário.
+     * Busca todos os badges de um usuário paginados.
      * Requer permissão: próprio usuário, admin ou mentor.
      */
     @Transactional(readOnly = true)
-    public List<UserBadgeResponse> execute(Long userId) {
+    public Page<UserBadgeResponse> execute(Long userId, Pageable pageable) {
 
-        log.info("Fetching badges for user {}", userId);
+        log.info("Fetching badges for user {} - page: {}, size: {}",
+                userId, pageable.getPageNumber(), pageable.getPageSize());
 
         validateUserPermission(userId);
         validateUserExists(userId);
 
-        List<UserBadge> userBadges = userBadgeRepository.findAllByUserId(userId);
-
-        return userBadges.stream()
+        List<UserBadgeResponse> allBadges = userBadgeRepository.findAllByUserId(userId).stream()
                 .map(BadgeMapper::toUserBadgeResponse)
-                .collect(Collectors.toList());
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), allBadges.size());
+
+        List<UserBadgeResponse> pageContent = allBadges.subList(start, end);
+        return new PageImpl<>(pageContent, pageable, allBadges.size());
     }
 
     /*

@@ -3,7 +3,7 @@ package dev.gamified.GamifiedPlatform.services.user;
 import dev.gamified.GamifiedPlatform.domain.Scopes;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.request.user.UserRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.UserResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
