@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.dtos.response;
+package dev.gamified.GamifiedPlatform.dtos.response.levels;
 
 import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import lombok.Builder;

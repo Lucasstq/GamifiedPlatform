@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.dtos.response;
+package dev.gamified.GamifiedPlatform.dtos.response.bosses;
 
 import dev.gamified.GamifiedPlatform.enums.BossFightStatus;
 import lombok.Builder;

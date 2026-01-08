@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.dtos.response;
+package dev.gamified.GamifiedPlatform.dtos.response.grimoire;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
