@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.controller.level;
 
 import dev.gamified.GamifiedPlatform.config.annotations.CanReadLevels;
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import dev.gamified.GamifiedPlatform.services.levels.*;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /*
  * Controller responsável pelos endpoints relacionados as consultas aos níveis de gamificação.
@@ -63,12 +61,14 @@ public class LevelQueryController {
     }
 
     /**
-     * GET /levels/difficulty/{difficulty} - Buscar níveis por dificuldade
+     * GET /levels/difficulty/{difficulty} - Buscar níveis por dificuldade paginados
      */
     @GetMapping("/difficulty/{difficulty}")
     @CanReadLevels
-    public ResponseEntity<List<LevelResponse>> getLevelsByDifficulty(@PathVariable DifficultyLevel difficulty) {
-        List<LevelResponse> levels = getLevelByDifficulty.execute(difficulty);
+    public ResponseEntity<Page<LevelResponse>> getLevelsByDifficulty(
+            @PathVariable DifficultyLevel difficulty,
+            @PageableDefault(size = 20, sort = "orderLevel") Pageable pageable) {
+        Page<LevelResponse> levels = getLevelByDifficulty.execute(difficulty, pageable);
         return ResponseEntity.ok(levels);
     }
 
@@ -95,22 +95,26 @@ public class LevelQueryController {
     }
 
     /**
-     * GET /levels/unlocked?currentXp={xp} - Listar níveis desbloqueados
+     * GET /levels/unlocked?currentXp={xp} - Listar níveis desbloqueados paginados
      */
     @GetMapping("/unlocked")
     @CanReadLevels
-    public ResponseEntity<List<LevelResponse>> getUnlockedLevels(@RequestParam Integer currentXp) {
-        List<LevelResponse> unlockedLevels = getUnlockLevels.execute(currentXp);
+    public ResponseEntity<Page<LevelResponse>> getUnlockedLevels(
+            @RequestParam Integer currentXp,
+            @PageableDefault(size = 20, sort = "orderLevel") Pageable pageable) {
+        Page<LevelResponse> unlockedLevels = getUnlockLevels.execute(currentXp, pageable);
         return ResponseEntity.ok(unlockedLevels);
     }
 
     /**
-     * GET /levels/locked?currentXp={xp} - Listar níveis ainda bloqueados
+     * GET /levels/locked?currentXp={xp} - Listar níveis ainda bloqueados paginados
      */
     @GetMapping("/locked")
     @CanReadLevels
-    public ResponseEntity<List<LevelResponse>> getLockedLevels(@RequestParam Integer currentXp) {
-        List<LevelResponse> lockedLevels = getLockedLevels.execute(currentXp);
+    public ResponseEntity<Page<LevelResponse>> getLockedLevels(
+            @RequestParam Integer currentXp,
+            @PageableDefault(size = 20, sort = "orderLevel") Pageable pageable) {
+        Page<LevelResponse> lockedLevels = getLockedLevels.execute(currentXp, pageable);
         return ResponseEntity.ok(lockedLevels);
     }
 

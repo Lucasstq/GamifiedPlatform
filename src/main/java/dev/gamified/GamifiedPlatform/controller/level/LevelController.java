@@ -1,7 +1,7 @@
 package dev.gamified.GamifiedPlatform.controller.level;
 
 import dev.gamified.GamifiedPlatform.config.annotations.CanReadLevels;
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.services.levels.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

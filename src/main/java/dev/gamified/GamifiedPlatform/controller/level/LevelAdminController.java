@@ -1,8 +1,8 @@
 package dev.gamified.GamifiedPlatform.controller.level;
 
 import dev.gamified.GamifiedPlatform.config.annotations.IsAdmin;
-import dev.gamified.GamifiedPlatform.dtos.request.LevelRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.request.level.LevelRequest;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.services.levels.CreateLevelService;
 import dev.gamified.GamifiedPlatform.services.levels.DeleteLevelService;
 import dev.gamified.GamifiedPlatform.services.levels.UpdateLevelService;

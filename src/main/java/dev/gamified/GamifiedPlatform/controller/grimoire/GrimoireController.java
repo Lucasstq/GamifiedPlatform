@@ -2,17 +2,19 @@ package dev.gamified.GamifiedPlatform.controller.grimoire;
 
 import dev.gamified.GamifiedPlatform.config.annotations.CanReadUsers;
 import dev.gamified.GamifiedPlatform.config.annotations.IsAdmin;
-import dev.gamified.GamifiedPlatform.dtos.response.GrimoireResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.grimoire.GrimoireResponse;
 import dev.gamified.GamifiedPlatform.services.grimoire.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /*
  * Controller para gerenciar grimórios (PDFs educacionais).
@@ -30,13 +32,14 @@ public class GrimoireController {
     private final DeleteGrimoireService deleteGrimoireService;
 
     /*
-     * Lista todos os grimórios disponíveis.
+     * Lista todos os grimórios disponíveis paginados.
      * Indica quais o usuário pode acessar baseado no seu nível.
      */
     @GetMapping
     @CanReadUsers
-    public ResponseEntity<List<GrimoireResponse>> listGrimoires() {
-        return ResponseEntity.ok(getAllGrimoiresService.execute());
+    public ResponseEntity<Page<GrimoireResponse>> listGrimoires(
+            @PageableDefault(size = 20, sort = "uploadedAt") Pageable pageable) {
+        return ResponseEntity.ok(getAllGrimoiresService.execute(pageable));
     }
 
     /*

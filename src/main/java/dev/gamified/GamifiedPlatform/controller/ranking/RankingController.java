@@ -2,17 +2,18 @@ package dev.gamified.GamifiedPlatform.controller.ranking;
 
 import dev.gamified.GamifiedPlatform.config.annotations.CanReadUsers;
 import dev.gamified.GamifiedPlatform.config.annotations.IsAdmin;
-import dev.gamified.GamifiedPlatform.dtos.response.MyRankingResponse;
-import dev.gamified.GamifiedPlatform.dtos.response.RankingResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.ranking.MyRankingResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.ranking.RankingResponse;
 import dev.gamified.GamifiedPlatform.services.ranking.GetGlobalRankingService;
 import dev.gamified.GamifiedPlatform.services.ranking.GetMyRankingService;
 import dev.gamified.GamifiedPlatform.services.ranking.GetRankingByLevelService;
 import dev.gamified.GamifiedPlatform.services.ranking.RefreshRankingCacheService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * Controller para gerenciar o ranking global de jogadores.
@@ -33,16 +34,9 @@ public class RankingController {
      */
     @GetMapping
     @CanReadUsers
-    public ResponseEntity<List<RankingResponse>> getGlobalRanking(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50") int size) {
-
-        // Limita o tamanho máximo da página
-        if (size > 100) {
-            size = 100;
-        }
-
-        return ResponseEntity.ok(getGlobalRankingService.execute(page, size));
+    public ResponseEntity<Page<RankingResponse>> getGlobalRanking(
+            @PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(getGlobalRankingService.execute(pageable));
     }
 
     /*
@@ -55,21 +49,14 @@ public class RankingController {
     }
 
     /*
-     * Busca o ranking filtrado por nível específico.
+     * Busca o ranking filtrado por nível específico paginado.
      */
     @GetMapping("/level/{levelId}")
     @CanReadUsers
-    public ResponseEntity<List<RankingResponse>> getRankingByLevel(
+    public ResponseEntity<Page<RankingResponse>> getRankingByLevel(
             @PathVariable Long levelId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "50") int size) {
-
-        // Limita o tamanho máximo da página
-        if (size > 100) {
-            size = 100;
-        }
-
-        return ResponseEntity.ok(getRankingByLevelService.execute(levelId, page, size));
+            @PageableDefault(size = 50) Pageable pageable) {
+        return ResponseEntity.ok(getRankingByLevelService.execute(levelId, pageable));
     }
 
     /*
