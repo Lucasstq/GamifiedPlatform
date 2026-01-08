@@ -3,8 +3,8 @@ package dev.gamified.GamifiedPlatform.mapper;
 import dev.gamified.GamifiedPlatform.domain.Badge;
 import dev.gamified.GamifiedPlatform.domain.Boss;
 import dev.gamified.GamifiedPlatform.domain.UserBadge;
-import dev.gamified.GamifiedPlatform.dtos.response.BadgeResponse;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBadgeResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserBadgeResponse;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

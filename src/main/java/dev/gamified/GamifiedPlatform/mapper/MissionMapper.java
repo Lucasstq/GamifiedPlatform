@@ -5,8 +5,8 @@ import dev.gamified.GamifiedPlatform.domain.Mission;
 import dev.gamified.GamifiedPlatform.domain.UserMission;
 import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionCreateRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionUpdateRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.MissionResponse;
-import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.missions.MissionResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserMissionResponse;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;

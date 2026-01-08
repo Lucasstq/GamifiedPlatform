@@ -1,8 +1,8 @@
 package dev.gamified.GamifiedPlatform.mapper;
 
 import dev.gamified.GamifiedPlatform.domain.Levels;
-import dev.gamified.GamifiedPlatform.dtos.request.LevelRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.LevelResponse;
+import dev.gamified.GamifiedPlatform.dtos.request.level.LevelRequest;
+import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;

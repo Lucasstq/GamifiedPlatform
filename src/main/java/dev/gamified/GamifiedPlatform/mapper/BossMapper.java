@@ -6,8 +6,8 @@ import dev.gamified.GamifiedPlatform.domain.UserBoss;
 import dev.gamified.GamifiedPlatform.dtos.request.boss.BossCreateRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.boss.BossFightEvaluationRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.boss.BossFightSubmissionRequest;
-import dev.gamified.GamifiedPlatform.dtos.response.BossResponse;
-import dev.gamified.GamifiedPlatform.dtos.response.UserBossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.BossResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.bosses.UserBossResponse;
 import lombok.experimental.UtilityClass;
 
 import java.time.LocalDateTime;
