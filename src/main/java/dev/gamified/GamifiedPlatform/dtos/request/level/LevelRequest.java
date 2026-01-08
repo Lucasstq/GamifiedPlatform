@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.dtos.request;
+package dev.gamified.GamifiedPlatform.dtos.request.level;
 
 import dev.gamified.GamifiedPlatform.enums.DifficultyLevel;
 import jakarta.validation.constraints.Min;

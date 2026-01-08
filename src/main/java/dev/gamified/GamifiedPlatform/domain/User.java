@@ -55,6 +55,12 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
+    @Column(name = "deleted")
+    private Boolean deleted = false;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "tb_user_scopes",
