@@ -39,9 +39,7 @@ public class LevelAdminController {
      */
     @PutMapping("/{id}")
     @IsAdmin
-    public ResponseEntity<LevelResponse> updateLevel(
-            @PathVariable Long id,
-            @Valid @RequestBody LevelRequest request) {
+    public ResponseEntity<LevelResponse> updateLevel(@PathVariable Long id, @Valid @RequestBody LevelRequest request) {
         LevelResponse updatedLevel = updateLevel.execute(id, request);
         return ResponseEntity.ok(updatedLevel);
     }

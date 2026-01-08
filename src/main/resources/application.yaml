@@ -54,11 +54,30 @@ spring:
 app:
   base-url: http://localhost:8080
 
+cors:
+  allowed-origins:
+    - http://localhost:3000
+    - http://localhost:8080
+    # Adicione aqui suas origens de produção:
+    # - https://gamified-platform.com
+    # - https://app.gamified-platform.com
+
+minio:
+  endpoint: ${MINIO_ENDPOINT:http://localhost:9000}
+  access-key: ${MINIO_ROOT_USER:minioadmin}
+  secret-key: ${MINIO_ROOT_PASSWORD:minioadmin}
+  bucket:
+    grimoires: grimoires
+
 jwt:
   public:
     key: classpath:authz.pub
   private:
     key: classpath:authz.pem
+  access-token:
+    expiration: 900  # 15 minutos em segundos
+  refresh-token:
+    expiration: 604800  # 7 dias em segundos
 
 logging:
   level:

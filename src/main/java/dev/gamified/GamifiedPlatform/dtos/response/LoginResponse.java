@@ -4,8 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record LoginResponse(
-        String token,
-        String expiresIn
+        String accessToken,
+        String refreshToken,
+        String tokenType,
+        Long expiresIn,
+        Long refreshExpiresIn
 ) {
 }
 

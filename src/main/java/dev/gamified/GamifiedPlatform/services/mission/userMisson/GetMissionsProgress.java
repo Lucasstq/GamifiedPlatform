@@ -20,20 +20,20 @@ public class GetMissionsProgress {
     private final MissionRepository missionRepository;
     private final LevelRepository levelRepository;
 
-    /**
+    /*
      * Calcula e retorna o progresso de missões de um usuário em um nível específico.
      * Este método coordena todo o fluxo de cálculo do progresso, incluindo:
      * - Busca do nível
      * - Contagem de missões totais e completadas
      * - Cálculo de porcentagem de progresso
      * - Verificação se pode desbloquear o boss
-     *
-     * @param userId  O ID do usuário para verificar o progresso
-     * @param levelId O ID do nível a ser analisado
-     * @return MissionProgressResponse contendo todas as informações de progresso
      */
     @Transactional(readOnly = true)
-    public MissionProgressResponse execute(Long userId, Long levelId) {
+    public MissionProgressResponse execute(Long levelId) {
+
+        Long userId = SecurityUtils.getCurrentUserId()
+                .orElseThrow(() -> new ResourceNotFoundException("User not authenticated"));
+
         log.info("Calculating user mission progress {} at level {}", userId, levelId);
 
         validateUserPermission(userId);
@@ -54,48 +54,33 @@ public class GetMissionsProgress {
         }
     }
 
-    /**
+    /*
      * Busca um nível no banco de dados pelo seu ID.
      * Lança exceção se o nível não for encontrado.
-     *
-     * @param levelId O ID do nível a ser buscado
-     * @return O objeto Levels encontrado
-     * @throws ResourceNotFoundException se o nível não existir
      */
     private Levels findLevel(Long levelId) {
         return levelRepository.findById(levelId)
                 .orElseThrow(() -> new ResourceNotFoundException("Level not found"));
     }
 
-    /**
+    /*
      * Conta o número total de missões disponíveis em um determinado nível.
-     *
-     * @param levelId O ID do nível para contar as missões
-     * @return O número total de missões no nível
      */
     private Long getTotalMissions(Long levelId) {
         return missionRepository.countByLevelId(levelId);
     }
 
-    /**
+    /*
      * Conta quantas missões foram completadas por um usuário específico em um nível.
      * Apenas missões com status COMPLETED são contabilizadas.
-     *
-     * @param userId  O ID do usuário
-     * @param levelId O ID do nível
-     * @return O número de missões completadas pelo usuário no nível
      */
     private Long getCompletedMissions(Long userId, Long levelId) {
         return userMissionRepository.countCompletedMissionsByUserAndLevel(userId, levelId);
     }
 
-    /**
+    /*
      * Calcula a porcentagem de progresso das missões completadas em relação ao total.
      * Retorna 0.0 se não houver missões no nível para evitar divisão por zero.
-     *
-     * @param totalMissions     O número total de missões no nível
-     * @param completedMissions O número de missões completadas
-     * @return A porcentagem de progresso (0.0 a 100.0)
      */
     private double calculateProgressPercentage(Long totalMissions, Long completedMissions) {
         if (totalMissions == 0) {
@@ -104,27 +89,17 @@ public class GetMissionsProgress {
         return (completedMissions.doubleValue() / totalMissions.doubleValue()) * 100;
     }
 
-    /**
+    /*
      * Verifica se o usuário atingiu progresso suficiente para desbloquear o boss do nível.
      * O critério é ter completado 80% ou mais das missões do nível.
-     *
-     * @param progressPercentage A porcentagem de progresso atual
-     * @return true se pode desbloquear o boss (>= 80%), false caso contrário
      */
     private boolean canUnlockBoss(double progressPercentage) {
         return progressPercentage >= 80.0;
     }
 
-    /**
+    /*
      * Constrói o objeto de resposta com todas as informações de progresso das missões.
      * A porcentagem é arredondada para 2 casas decimais.
-     *
-     * @param level              O objeto do nível
-     * @param totalMissions      O número total de missões
-     * @param completedMissions  O número de missões completadas
-     * @param progressPercentage A porcentagem de progresso calculada
-     * @param canUnlockBoss      Se pode desbloquear o boss
-     * @return MissionProgressResponse com todos os dados formatados
      */
     private MissionProgressResponse buildMissionProgressResponse(
             Levels level,

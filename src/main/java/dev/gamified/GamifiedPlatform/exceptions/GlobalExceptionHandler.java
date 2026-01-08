@@ -1,17 +1,26 @@
 package dev.gamified.GamifiedPlatform.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
+
+    @Value("${app.show-error-details:false}")
+    private boolean showErrorDetails;
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(ResourceNotFoundException ex) {
@@ -74,12 +83,30 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex) {
+    public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex, HttpServletRequest request) {
+        // 🔒 SEGURANÇA: Gerar ID único para rastreamento do erro
+        String errorId = UUID.randomUUID().toString();
+
+        // Log completo do erro (APENAS em logs internos, não na response)
+        log.error("Unhandled exception [errorId={}] on request [{}]: {}",
+                  errorId, request.getRequestURI(), ex.getMessage(), ex);
+
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.put("error", "Internal Server Error");
-        errorResponse.put("message", ex.getMessage());
+        errorResponse.put("errorId", errorId);
+
+        // 🔒 SEGURANÇA: Mostrar detalhes APENAS em ambiente de desenvolvimento
+        if (showErrorDetails) {
+            errorResponse.put("message", ex.getMessage());
+            errorResponse.put("exception", ex.getClass().getName());
+            errorResponse.put("stackTrace", Arrays.toString(ex.getStackTrace()));
+            log.warn("Error details exposed (development mode): {}", ex.getMessage());
+        } else {
+            // Produção: mensagem genérica
+            errorResponse.put("message", "An unexpected error occurred. Please contact support with error ID: " + errorId);
+        }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }

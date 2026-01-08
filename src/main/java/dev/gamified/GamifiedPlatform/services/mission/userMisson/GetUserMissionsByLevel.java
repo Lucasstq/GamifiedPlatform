@@ -32,7 +32,11 @@ public class GetUserMissionsByLevel {
     private final LevelRepository levelRepository;
 
     @Transactional(readOnly = true)
-    public List<UserMissionResponse> execute(Long userId, Long levelId) {
+    public List<UserMissionResponse> execute(Long levelId) {
+
+        Long userId = SecurityUtils.getCurrentUserId()
+                .orElseThrow(() -> new AccessDeniedException("User not authenticated"));
+
         log.info("Searching for user missions at level {}", levelId);
 
         isOwnerOrAdmin(userId);

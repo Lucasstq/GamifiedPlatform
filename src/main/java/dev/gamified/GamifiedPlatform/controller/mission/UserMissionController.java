@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,28 +30,27 @@ public class UserMissionController {
 
     @GetMapping("/my-missions/level/{levelId}")
     @CanReadQuests
-    public ResponseEntity<List<UserMissionResponse>> getMyMissionsByLevel(@PathVariable Long levelId, Long userId) {
-        return ResponseEntity.ok(getUserMissionsByLevel.execute(userId, levelId));
+    public ResponseEntity<List<UserMissionResponse>> getMyMissionsByLevel(@PathVariable Long levelId) {
+        return ResponseEntity.ok(getUserMissionsByLevel.execute(levelId));
     }
 
     @PostMapping("/{missionId}/start")
     @CanInitiateQuests
-    public ResponseEntity<UserMissionResponse> startMission(@PathVariable Long missionId, Long userId) {
-        return ResponseEntity.ok(startMission.execute(missionId, userId));
+    public ResponseEntity<UserMissionResponse> startMission(@PathVariable Long missionId) {
+        return ResponseEntity.ok(startMission.execute(missionId));
     }
 
     @PostMapping("/{missionId}/submit")
     @CanCompleteQuests
     public ResponseEntity<UserMissionResponse> submitMission(@PathVariable Long missionId,
-                                                             @Valid @RequestBody MissionSubmissionRequest request,
-                                                             Long userId) {
-        return ResponseEntity.ok(submitMission.execute(userId, missionId, request));
+                                                             @Valid @RequestBody MissionSubmissionRequest request) {
+        return ResponseEntity.ok(submitMission.execute(missionId, request));
     }
 
     @GetMapping("/my-progress/level/{levelId}")
     @CanReadProfile
-    public ResponseEntity<MissionProgressResponse> getMyProgress(@PathVariable Long levelId, Long userId) {
-        return ResponseEntity.ok(getMissionProgress.execute(levelId, userId));
+    public ResponseEntity<MissionProgressResponse> getMyProgress(@PathVariable Long levelId) {
+        return ResponseEntity.ok(getMissionProgress.execute(levelId));
     }
 
     @GetMapping("/pending")
@@ -65,15 +63,14 @@ public class UserMissionController {
     @CanQuestsEvaluate
     public ResponseEntity<UserMissionResponse> evaluateMission(
             @PathVariable Long userMissionId,
-            @Valid @RequestBody MissionEvaluationRequest request,
-            Long userId) {
-        return ResponseEntity.ok(evaluateMission.execute(userMissionId, userId, request));
+            @Valid @RequestBody MissionEvaluationRequest request) {
+        return ResponseEntity.ok(evaluateMission.execute(userMissionId, request));
     }
 
     @GetMapping("/my-evaluations")
-    @PreAuthorize("hasAnyAuthority('SCOPE_mentor', 'SCOPE_admin')")
-    public ResponseEntity<Page<UserMissionResponse>> getMyEvaluations(Pageable pageable, Long userId) {
-        return ResponseEntity.ok(getEvaluationsByMentor.execute(userId, pageable));
+    @CanQuestsEvaluate
+    public ResponseEntity<Page<UserMissionResponse>> getMyEvaluations(Pageable pageable) {
+        return ResponseEntity.ok(getEvaluationsByMentor.execute(pageable));
     }
 }
 

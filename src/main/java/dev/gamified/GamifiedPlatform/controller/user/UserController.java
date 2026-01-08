@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.controller;
+package dev.gamified.GamifiedPlatform.controller.user;
 
 import dev.gamified.GamifiedPlatform.config.annotations.CanDeleteProfile;
 import dev.gamified.GamifiedPlatform.config.annotations.CanReadUsers;
