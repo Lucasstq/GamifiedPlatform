@@ -36,6 +36,18 @@ public interface UserBossRepository extends JpaRepository<UserBoss, Long> {
     @Query("SELECT ub FROM UserBoss ub " +
            "WHERE ub.evaluatedBy.id = :mentorId " +
            "ORDER BY ub.evaluatedAt DESC")
-    Page<UserBoss> findByEvaluatedById(@Param("mentorId") Long mentorId, Pageable pageable);
+    Page<UserBoss> findEvaluationsByMentor(@Param("mentorId") Long mentorId, Pageable pageable);
+
+    @Query("SELECT COUNT(ub) FROM UserBoss ub WHERE ub.boss.id = :bossId")
+    Long countByBossId(@Param("bossId") Long bossId);
+
+    @Query("SELECT COUNT(ub) FROM UserBoss ub WHERE ub.boss.id = :bossId AND ub.status = 'DEFEATED'")
+    Long countDefeatedByBossId(@Param("bossId") Long bossId);
+
+    @Query("SELECT COUNT(ub) FROM UserBoss ub WHERE ub.boss.id = :bossId AND ub.status = 'FAILED'")
+    Long countFailedByBossId(@Param("bossId") Long bossId);
+
+    @Query("SELECT COUNT(ub) FROM UserBoss ub WHERE ub.status IN ('LOCKED', 'UNLOCKED')")
+    Long countUndefeatedBosses();
 }
 

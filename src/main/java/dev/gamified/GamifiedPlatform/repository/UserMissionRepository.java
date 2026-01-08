@@ -49,6 +49,17 @@ public interface UserMissionRepository extends JpaRepository<UserMission, Long> 
            "ORDER BY um.evaluatedAt DESC")
     Page<UserMission> findAllEvaluatedByMentor(@Param("mentorId") Long mentorId, Pageable pageable);
 
+    @Query("SELECT COUNT(um) FROM UserMission um WHERE um.mission.id = :missionId")
+    Long countByMissionId(@Param("missionId") Long missionId);
+
+    @Query("SELECT COUNT(um) FROM UserMission um WHERE um.mission.id = :missionId AND um.status = 'COMPLETED'")
+    Long countCompletedByMissionId(@Param("missionId") Long missionId);
+
+    @Query("SELECT COUNT(um) FROM UserMission um WHERE um.mission.id = :missionId AND um.status = 'FAILED'")
+    Long countFailedByMissionId(@Param("missionId") Long missionId);
+
+    @Query("SELECT COUNT(DISTINCT um.user.id) FROM UserMission um WHERE um.mission.level.id = :levelId")
+    Long countDistinctUsersByLevelId(@Param("levelId") Long levelId);
     @Query("SELECT um FROM UserMission um " +
            "WHERE um.evaluatedBy IS NOT NULL " +
            "ORDER BY um.evaluatedAt DESC")
