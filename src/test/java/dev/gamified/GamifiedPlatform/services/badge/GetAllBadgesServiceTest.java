@@ -2,8 +2,7 @@ package dev.gamified.GamifiedPlatform.services.badge;
 
 import dev.gamified.GamifiedPlatform.domain.Badge;
 import dev.gamified.GamifiedPlatform.domain.Levels;
-import dev.gamified.GamifiedPlatform.dtos.response.BadgeResponse;
-import dev.gamified.GamifiedPlatform.mapper.BadgeMapper;
+import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeResponse;
 import dev.gamified.GamifiedPlatform.repository.BadgeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
