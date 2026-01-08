@@ -29,7 +29,7 @@ public class StartMissions {
     private final UserRepository userRepository;
     private final PlayerCharacterRepository playerCharacterRepository;
 
-    /**
+    /*
      * Inicia uma missão para um usuário específico.
      * Este método coordena todo o fluxo de início de missão, incluindo:
      * - Validação de permissões de acesso
@@ -37,43 +37,36 @@ public class StartMissions {
      * - Validação de acesso ao nível da missão
      * - Criação ou atualização do registro UserMission
      * - Validação do status da missão
-     *
-     * @param userId O ID do usuário que iniciará a missão
-     * @param missionId O ID da missão a ser iniciada
-     * @return UserMissionResponse com os dados da missão iniciada
-     * @throws AccessDeniedException se o usuário não tiver permissão
-     * @throws ResourceNotFoundException se usuário ou missão não forem encontrados
-     * @throws BusinessException se a missão não puder ser iniciada no estado atual
-     * @throws IllegalStateException se o usuário não tiver acesso ao nível da missão
      */
     @Transactional
-    public UserMissionResponse execute(Long userId, Long missionId) {
-        log.info("User {} started mission {}", userId, missionId);
+    public UserMissionResponse execute(Long missionId) {
 
-        validateUserPermission(userId);
+        User currentUser = SecurityUtils.getCurrentUserId()
+                .flatMap(userRepository::findById)
+                .orElseThrow(() -> new AccessDeniedException("User not authenticated"));
 
-        User user = findUser(userId);
+        log.info("User {} started mission {}", currentUser.getId(), missionId);
+
+        validateUserPermission(currentUser.getId());
+
         Mission mission = findMission(missionId);
 
-        checkUserAccessToMissionLevel(userId, missionId);
+        checkUserAccessToMissionLevel(currentUser.getId(), missionId);
 
-        UserMission userMission = findOrCreateUserMission(user, mission);
+        UserMission userMission = findOrCreateUserMission(currentUser, mission);
         validateMissionStatus(userMission);
 
         startMission(userMission);
 
         UserMission savedUserMission = userMissionRepository.save(userMission);
-        log.info("Mission {} successfully initiated by user {}", missionId, userId);
+        log.info("Mission {} successfully initiated by user {}", missionId, currentUser.getId());
 
         return MissionMapper.toUserMissionResponse(savedUserMission);
     }
 
-    /**
+    /*
      * Valida se o usuário autenticado tem permissão para iniciar a missão.
      * Verifica se é o dono do recurso ou um administrador.
-     *
-     * @param userId O ID do usuário a ser validado
-     * @throws AccessDeniedException se o usuário não tiver permissão
      */
     private void validateUserPermission(Long userId) {
         if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
@@ -81,49 +74,25 @@ public class StartMissions {
         }
     }
 
-    /**
-     * Busca um usuário no banco de dados pelo seu ID.
-     *
-     * @param userId O ID do usuário a ser buscado
-     * @return O objeto User encontrado
-     * @throws ResourceNotFoundException se o usuário não for encontrado
-     */
-    private User findUser(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found by ID: " + userId));
-    }
-
-    /**
+    /*
      * Busca uma missão no banco de dados pelo seu ID.
-     *
-     * @param missionId O ID da missão a ser buscada
-     * @return O objeto Mission encontrado
-     * @throws ResourceNotFoundException se a missão não for encontrada
      */
     private Mission findMission(Long missionId) {
         return missionRepository.findById(missionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not found by ID: " + missionId));
     }
 
-    /**
+    /*
      * Busca ou cria um registro de UserMission para o usuário e missão especificados.
      * Se não existir, cria um novo registro com status AVAILABLE.
-     *
-     * @param user O usuário que iniciará a missão
-     * @param mission A missão a ser iniciada
-     * @return O UserMission encontrado ou recém-criado
      */
     private UserMission findOrCreateUserMission(User user, Mission mission) {
         return userMissionRepository.findByUserIdAndMissionId(user.getId(), mission.getId())
                 .orElseGet(() -> createNewUserMission(user, mission));
     }
 
-    /**
+    /*
      * Cria um novo registro de UserMission com status AVAILABLE.
-     *
-     * @param user O usuário da missão
-     * @param mission A missão a ser associada
-     * @return O UserMission recém-criado e salvo
      */
     private UserMission createNewUserMission(User user, Mission mission) {
         UserMission newUserMission = UserMission.builder()
@@ -134,12 +103,9 @@ public class StartMissions {
         return userMissionRepository.save(newUserMission);
     }
 
-    /**
+    /*
      * Valida se a missão pode ser iniciada baseado no seu status atual.
      * Apenas missões com status AVAILABLE ou FAILED podem ser iniciadas.
-     *
-     * @param userMission A UserMission a ser validada
-     * @throws BusinessException se a missão não puder ser iniciada no estado atual
      */
     private void validateMissionStatus(UserMission userMission) {
         if (userMission.getStatus() != MissionStatus.AVAILABLE &&
@@ -148,24 +114,17 @@ public class StartMissions {
         }
     }
 
-    /**
+    /*
      * Atualiza o status da missão para IN_PROGRESS e registra o horário de início.
-     *
-     * @param userMission A UserMission a ser iniciada
      */
     private void startMission(UserMission userMission) {
         userMission.setStatus(MissionStatus.IN_PROGRESS);
         userMission.setStartedAt(LocalDateTime.now());
     }
 
-    /**
+    /*
      * Verifica se o usuário tem acesso ao nível da missão baseado no nível do seu personagem.
      * O nível do personagem deve ser maior ou igual ao nível da missão.
-     *
-     * @param userId O ID do usuário a ser verificado
-     * @param missionId O ID da missão a ser verificada
-     * @throws ResourceNotFoundException se o personagem ou missão não forem encontrados
-     * @throws IllegalStateException se o usuário não tiver acesso ao nível da missão
      */
     private void checkUserAccessToMissionLevel(Long userId, Long missionId) {
         PlayerCharacter character = playerCharacterRepository.findByUserId(userId)

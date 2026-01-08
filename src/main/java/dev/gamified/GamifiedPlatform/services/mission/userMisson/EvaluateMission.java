@@ -7,12 +7,13 @@ import dev.gamified.GamifiedPlatform.domain.UserMission;
 import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionEvaluationRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.enums.MissionStatus;
-import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;
-import dev.gamified.GamifiedPlatform.repository.*;
+import dev.gamified.GamifiedPlatform.repository.PlayerCharacterRepository;
+import dev.gamified.GamifiedPlatform.repository.UserMissionRepository;
+import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import dev.gamified.GamifiedPlatform.services.playerCharacter.AddXpToCharacterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,16 +33,18 @@ public class EvaluateMission {
     private final AddXpToCharacterService addXpToCharacterService;
 
     @Transactional
-    public UserMissionResponse execute(Long userMissionId, Long mentorId, MissionEvaluationRequest request) {
-        log.info("Mentor {} evaluating mission {}", mentorId, userMissionId);
+    public UserMissionResponse execute(Long userMissionId, MissionEvaluationRequest request) {
 
-        isOwnerOrAdmin(mentorId);
+        User currentUser = SecurityUtils.getCurrentUserId()
+                .flatMap(userRepository::findById)
+                .orElseThrow(() -> new AccessDeniedException("User not authenticated"));
+
+        log.info("Mentor {} evaluating mission {}", currentUser.getId(), userMissionId);
 
         UserMission userMission = findAndValidateUserMission(userMissionId);
-        User mentor = validateMentor(mentorId);
 
-        updateMissionEvaluation(userMission, mentor, request);
-        processMissionResult(userMission, request.getApproved());
+        updateMissionEvaluation(userMission, currentUser, request);
+        processMissionResult(userMission, request.approved());
 
         UserMission savedUserMission = userMissionRepository.save(userMission);
         return MissionMapper.toUserMissionResponse(savedUserMission);
@@ -58,27 +61,9 @@ public class EvaluateMission {
         return userMission;
     }
 
-    // Verifica se o usuário autenticado é o dono do recurso ou um admin
-    private void isOwnerOrAdmin(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission to update this user");
-        }
-    }
-
-    private User validateMentor(Long mentorId) {
-        User mentor = userRepository.findById(mentorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Mentor not found"));
-
-        if (mentor.getRole() != Roles.ROLE_MENTOR) {
-            throw new BusinessException("User is not authorized to evaluate missions");
-        }
-
-        return mentor;
-    }
-
     private void updateMissionEvaluation(UserMission userMission, User mentor, MissionEvaluationRequest request) {
         userMission.setEvaluatedBy(mentor);
-        userMission.setFeedback(request.getFeedback());
+        userMission.setFeedback(request.feedback());
         userMission.setEvaluatedAt(LocalDateTime.now());
     }
 

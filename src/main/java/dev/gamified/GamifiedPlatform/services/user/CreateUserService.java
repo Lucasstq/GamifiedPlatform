@@ -96,7 +96,8 @@ public class CreateUserService {
             case ROLE_USER -> List.of(
                     "profile:read", "profile:write", "profile:delete",
                     "character:read", "character:write", "levels:read",
-                    "quests:read", "quests:initiate", "quests:complete", "achievements:read"
+                    "quests:read", "quests:initiate", "quests:complete", "achievements:read",
+                    "bosses:read", "bosses:fight"
             );
             case ROLE_MENTOR -> List.of(
                     "users:read",
@@ -104,6 +105,7 @@ public class CreateUserService {
                     "character:read", "character:write",
                     "quests:read", "quests:write", "quests:complete",
                     "quests:evaluate", "pending-quests:read", "my-evaluations:read",
+                    "bosses:read", "bosses:fight", "bosses:evaluate",
                     "achievements:read"
             );
             case ROLE_ADMIN -> List.of("admin:all");

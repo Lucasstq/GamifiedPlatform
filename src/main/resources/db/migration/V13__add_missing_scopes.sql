@@ -14,4 +14,7 @@ VALUES ('profile:read'),
        ('my-evaluations:read'),
        ('achievements:read'),
        ('users:read'),
+       ('bosses:read'),
+       ('bosses:fight'),
+       ('bosses:evaluate'),
        ('admin:all') ON CONFLICT (name) DO NOTHING;

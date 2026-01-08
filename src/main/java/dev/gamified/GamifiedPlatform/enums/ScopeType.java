@@ -25,6 +25,11 @@ public enum ScopeType {
     QUESTS_INITIATE("quests:initiate", "Iniciar missões"),
     QUESTS_COMPLETE("quests:complete", "Completar missões"),
 
+    //Bosses
+    FIGHT_BOSSES("bosses:fight", "Lutar contra bosses"),
+    BOSS_READ("bosses:read", "Ler informações de bosses"),
+    EVALUATE_BOSSES("bosses:evaluate", "Avaliar lutas contra bosses"),
+
     //Exclusivo de mentores ou administradores
     QUESTS_EVALUATE("quests:evaluate", "Avaliar missões"),
     PEDING_QUESTS_READ("pending-quests:read", "Ler missões pendentes de avaliação"),

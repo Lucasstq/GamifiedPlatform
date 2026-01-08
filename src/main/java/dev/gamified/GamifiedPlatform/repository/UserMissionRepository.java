@@ -49,6 +49,11 @@ public interface UserMissionRepository extends JpaRepository<UserMission, Long> 
            "ORDER BY um.evaluatedAt DESC")
     Page<UserMission> findAllEvaluatedByMentor(@Param("mentorId") Long mentorId, Pageable pageable);
 
+    @Query("SELECT um FROM UserMission um " +
+           "WHERE um.evaluatedBy IS NOT NULL " +
+           "ORDER BY um.evaluatedAt DESC")
+    Page<UserMission> findAllEvaluations(Pageable pageable);
+
     boolean existsByUserIdAndMissionId(Long userId, Long missionId);
 }
 

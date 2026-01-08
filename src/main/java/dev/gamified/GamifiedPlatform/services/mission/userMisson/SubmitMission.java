@@ -24,7 +24,11 @@ public class SubmitMission {
     private final UserMissionRepository userMissionRepository;
 
     @Transactional
-    public UserMissionResponse execute(Long userId, Long missionId, MissionSubmissionRequest request) {
+    public UserMissionResponse execute(Long missionId, MissionSubmissionRequest request) {
+
+        Long userId = SecurityUtils.getCurrentUserId()
+                .orElseThrow(() -> new ResourceNotFoundException("User not authenticated"));
+
         log.info("User {} submitting mission {}", userId, missionId);
 
         validateUserPermission(userId);
@@ -35,8 +39,8 @@ public class SubmitMission {
         userCanSubmitMission(userMission);
 
         userMission.setStatus(MissionStatus.AWAITING_EVALUATION);
-        userMission.setSubmissionUrl(request.getSubmissionUrl());
-        userMission.setSubmissionNotes(request.getSubmissionNotes());
+        userMission.setSubmissionUrl(request.submissionUrl());
+        userMission.setSubmissionNotes(request.submissionNotes());
         userMission.setSubmittedAt(LocalDateTime.now());
 
         UserMission savedUserMission = userMissionRepository.save(userMission);

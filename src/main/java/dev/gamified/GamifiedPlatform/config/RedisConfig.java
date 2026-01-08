@@ -115,6 +115,12 @@ public class RedisConfig {
         // Rate limiting - expira rápido
         cacheConfigurations.put("rateLimiting", defaultConfig.entryTtl(Duration.ofMinutes(5)));
 
+        // Cache de ranking global - atualizado a cada 5 minutos
+        cacheConfigurations.put("ranking", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+
+        // Cache de ranking por nível - atualizado a cada 5 minutos
+        cacheConfigurations.put("rankingByLevel", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+
         return RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)
                 .withInitialCacheConfigurations(cacheConfigurations)
