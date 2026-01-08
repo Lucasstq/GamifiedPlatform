@@ -36,8 +36,8 @@ CREATE INDEX idx_downloads_date ON tb_grimoire_downloads(downloaded_at DESC);
 
 -- Adicionar scope para acesso a grimórios
 -- Nota: Operações admin (upload/delete) usam @IsAdmin, não precisam de scope específico
-INSERT INTO tb_scopes (name, description)
-VALUES ('grimoire:read', 'Permissão para visualizar e fazer download de grimórios desbloqueados')
+INSERT INTO tb_scopes (name)
+VALUES ('grimoire:read')
 ON CONFLICT (name) DO NOTHING;
 
 -- Atribuir scope de grimórios a todos os usuários (ADMIN e USER)
