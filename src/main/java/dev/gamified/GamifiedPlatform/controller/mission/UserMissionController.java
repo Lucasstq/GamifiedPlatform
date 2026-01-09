@@ -5,7 +5,7 @@ import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionEvaluationReque
 import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionSubmissionRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.missions.MissionProgressResponse;
 import dev.gamified.GamifiedPlatform.dtos.response.user.UserMissionResponse;
-import dev.gamified.GamifiedPlatform.services.mission.userMisson.*;
+import dev.gamified.GamifiedPlatform.services.mission.userMission.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

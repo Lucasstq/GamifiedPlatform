@@ -80,6 +80,21 @@ public class SecurityAuditService {
     }
 
     @Async
+    public void logLogoutAllDevices(Long userId, String username, String ipAddress) {
+        SecurityAuditLog auditLog = SecurityAuditLog.builder()
+                .eventType("LOGOUT_ALL_DEVICES")
+                .userId(userId)
+                .username(username)
+                .ipAddress(ipAddress)
+                .severity("WARNING")
+                .details("User logged out from all devices")
+                .build();
+
+        auditLogRepository.save(auditLog);
+        log.warn("AUDIT: Logout all devices - user: {}, ip: {}", username, ipAddress);
+    }
+
+    @Async
     public void logUnauthorizedAccess(Long userId, String username, String ipAddress, String resource) {
         SecurityAuditLog auditLog = SecurityAuditLog.builder()
                 .eventType("UNAUTHORIZED_ACCESS")
