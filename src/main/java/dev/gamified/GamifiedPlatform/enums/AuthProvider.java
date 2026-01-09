@@ -1,6 +1,8 @@
 package dev.gamified.GamifiedPlatform.enums;
 
-public enum Provider {
+public enum AuthProvider {
+    LOCAL,
     GOOGLE,
     GITHUB
 }
+

@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.domain;
 
+import dev.gamified.GamifiedPlatform.enums.AuthProvider;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,8 +28,17 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private AuthProvider provider = AuthProvider.LOCAL;
+
+    @Column(name = "provider_id")
+    private String providerId;
+
+    @Column(name = "provider_email")
+    private String providerEmail;
 
     @Column(name = "avatar_url")
     private String avatarUrl;

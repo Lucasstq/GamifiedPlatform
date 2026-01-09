@@ -1,25 +1,20 @@
 package dev.gamified.GamifiedPlatform.services.auth;
 
+import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.RefreshToken;
-import dev.gamified.GamifiedPlatform.domain.Scopes;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.request.auth.LoginRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.login.LoginResponse;
+import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
 import dev.gamified.GamifiedPlatform.services.security.RateLimitService;
 import dev.gamified.GamifiedPlatform.services.security.SecurityAuditService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,16 +23,10 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtEncoder jwtEncoder;
+    private final JwtTokenService jwtTokenService;
     private final RateLimitService rateLimitService;
     private final RefreshTokenService refreshTokenService;
     private final SecurityAuditService auditService;
-
-    @Value("${jwt.access-token.expiration:900}") // 15 minutos
-    private Long accessTokenExpiration;
-
-    @Value("${jwt.refresh-token.expiration:604800}") // 7 dias
-    private Long refreshTokenExpiration;
 
     public LoginResponse authenticate(LoginRequest request, String ipAddress, String userAgent) {
         // Verifica rate limiting antes de processar login
@@ -74,7 +63,7 @@ public class AuthService {
         rateLimitService.reset("login:" + request.username());
 
         // Gerar access token (curta duração)
-        String accessToken = generateAccessToken(user);
+        String accessToken = jwtTokenService.generateAccessToken(user);
 
         // Gerar refresh token (longa duração)
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user, ipAddress, userAgent);
@@ -87,8 +76,8 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getToken())
                 .tokenType("Bearer")
-                .expiresIn(accessTokenExpiration)
-                .refreshExpiresIn(refreshTokenExpiration)
+                .expiresIn(jwtTokenService.getAccessTokenExpiration())
+                .refreshExpiresIn(jwtTokenService.getRefreshTokenExpiration())
                 .build();
     }
 
@@ -100,7 +89,7 @@ public class AuthService {
         User user = refreshToken.getUser();
 
         // Gerar novo access token
-        String accessToken = generateAccessToken(user);
+        String accessToken = jwtTokenService.generateAccessToken(user);
 
         // Log de refresh
         auditService.logTokenRefresh(user.getId(), user.getUsername(), ipAddress);
@@ -110,8 +99,8 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshTokenValue) // Mesmo refresh token
                 .tokenType("Bearer")
-                .expiresIn(accessTokenExpiration)
-                .refreshExpiresIn(refreshTokenExpiration)
+                .expiresIn(jwtTokenService.getAccessTokenExpiration())
+                .refreshExpiresIn(jwtTokenService.getRefreshTokenExpiration())
                 .build();
     }
 
@@ -131,11 +120,20 @@ public class AuthService {
 
     /**
      * Logout de todos os dispositivos: revoga todos os refresh tokens do usuário.
+     * Obtém o userId do contexto de segurança (usuário autenticado).
      */
-    public void logoutAllDevices(Long userId, String ipAddress) {
+    public void logoutAllDevices(String ipAddress) {
+        Long userId = SecurityUtils.getCurrentUserId()
+                .orElseThrow(() -> new AccessDeniedException("User must be authenticated"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("User not found"));
+
         refreshTokenService.revokeAllUserTokens(userId);
-        // Log seria adicionado aqui se tivéssemos o username
-        log.info("User logged out from all devices: userId={}", userId);
+
+        // Log de logout de todos os dispositivos
+        auditService.logLogoutAllDevices(user.getId(), user.getUsername(), ipAddress);
+        log.info("User logged out from all devices: {} (id={})", user.getUsername(), userId);
     }
 
     private void isPasswordCorrect(String rawPassword, String encodedPassword) {
@@ -154,24 +152,6 @@ public class AuthService {
         if (!user.getEmailVerified()) {
             throw new BusinessException("Email address is not verified");
         }
-    }
-
-    private String generateAccessToken(User user) {
-        List<String> scopes = user.getScopes().stream()
-                .map(Scopes::getName)
-                .toList();
-
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("gamified-platform")
-                .subject(user.getUsername())
-                .issuedAt(Instant.now())
-                .expiresAt(Instant.now().plusSeconds(accessTokenExpiration))
-                .claim("userId", user.getId())
-                .claim("username", user.getUsername())
-                .claim("scope", scopes)
-                .build();
-
-        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 }
 

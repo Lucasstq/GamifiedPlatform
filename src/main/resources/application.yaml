@@ -51,8 +51,29 @@ spring:
           ssl:
             trust: ${MAIL_HOST:smtp.gmail.com}
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+          github:
+            client-id: ${GITHUB_CLIENT_ID}
+            client-secret: ${GITHUB_CLIENT_SECRET}
+            scope:
+              - user:email
+              - read:user
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+
 app:
   base-url: http://localhost:8080
+  oauth2:
+    redirect-uri: http://localhost:3000/oauth2/redirect
 
 cors:
   allowed-origins:
@@ -78,6 +99,22 @@ jwt:
     expiration: 900  # 15 minutos em segundos
   refresh-token:
     expiration: 604800  # 7 dias em segundos
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    displayRequestDuration: true
+    tryItOutEnabled: true
+    filter: true
+  show-actuator: false
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json
 
 logging:
   level:

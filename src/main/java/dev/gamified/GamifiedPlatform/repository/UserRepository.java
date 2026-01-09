@@ -1,6 +1,7 @@
 package dev.gamified.GamifiedPlatform.repository;
 
 import dev.gamified.GamifiedPlatform.domain.User;
+import dev.gamified.GamifiedPlatform.enums.AuthProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -46,5 +47,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Query("SELECT COUNT(u) FROM User u WHERE u.deleted = false")
     Long countActiveUsers();
+
+    /*
+     Busca usuário pelo provider OAuth2 e provider ID
+     */
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.scopes WHERE u.provider = :provider AND u.providerId = :providerId AND u.deleted = false")
+    Optional<User> findByProviderAndProviderId(@Param("provider") AuthProvider provider, @Param("providerId") String providerId);
 
 }
