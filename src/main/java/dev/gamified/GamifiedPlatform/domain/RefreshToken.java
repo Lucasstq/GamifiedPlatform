@@ -3,6 +3,7 @@ package dev.gamified.GamifiedPlatform.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "tb_refresh_tokens")
+@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @Builder

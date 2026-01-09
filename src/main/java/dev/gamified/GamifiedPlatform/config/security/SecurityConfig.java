@@ -5,10 +5,10 @@ import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.proc.SecurityContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -30,12 +30,19 @@ import java.security.interfaces.RSAPublicKey;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
-@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
     private final CustomOAuth2UserServiceAdapter customOAuth2UserServiceAdapter;
+
+    public SecurityConfig(@Lazy OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler,
+                          OAuth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler,
+                          CustomOAuth2UserServiceAdapter customOAuth2UserServiceAdapter) {
+        this.oauth2AuthenticationSuccessHandler = oauth2AuthenticationSuccessHandler;
+        this.oauth2AuthenticationFailureHandler = oauth2AuthenticationFailureHandler;
+        this.customOAuth2UserServiceAdapter = customOAuth2UserServiceAdapter;
+    }
 
     @Value("${jwt.public.key}")
     private RSAPublicKey publicKey;

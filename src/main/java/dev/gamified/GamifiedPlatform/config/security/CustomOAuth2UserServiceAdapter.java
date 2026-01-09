@@ -40,9 +40,13 @@ public class CustomOAuth2UserServiceAdapter implements org.springframework.secur
             AuthProvider provider = AuthProvider.valueOf(registrationId.toUpperCase());
 
             log.info("Processing OAuth2 user from provider: {}", provider);
+            log.debug("OAuth2 attributes received: {}", oAuth2User.getAttributes().keySet());
 
             // Processar usuário com o serviço customizado
             User user = oAuth2UserService.processOAuth2User(provider, oAuth2User.getAttributes());
+
+            log.info("OAuth2 user processed successfully. UserId: {}, Username: {}",
+                     user.getId(), user.getUsername());
 
             // Adicionar userId aos atributos para uso posterior nos handlers
             Map<String, Object> attributes = new HashMap<>(oAuth2User.getAttributes());
@@ -54,6 +58,19 @@ public class CustomOAuth2UserServiceAdapter implements org.springframework.secur
                     .getProviderDetails()
                     .getUserInfoEndpoint()
                     .getUserNameAttributeName();
+
+            // Fallback para atributo de nome padrão se não especificado
+            if (nameAttributeKey == null || nameAttributeKey.isEmpty()) {
+                nameAttributeKey = switch (provider) {
+                    case GOOGLE -> "sub";
+                    case GITHUB -> "id";
+                    case LOCAL -> "id"; // Fallback para LOCAL (não deve ser usado no OAuth2)
+                };
+                log.warn("No nameAttributeKey configured for provider {}, using fallback: {}",
+                         provider, nameAttributeKey);
+            }
+
+            log.debug("Using nameAttributeKey: {}", nameAttributeKey);
 
             // Retornar OAuth2User com os atributos atualizados
             return new DefaultOAuth2User(

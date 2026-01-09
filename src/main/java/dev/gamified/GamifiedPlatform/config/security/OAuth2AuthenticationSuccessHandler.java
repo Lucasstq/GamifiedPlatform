@@ -38,50 +38,76 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                                         Authentication authentication) throws IOException, ServletException {
 
         if (authentication instanceof OAuth2AuthenticationToken oauthToken) {
-            OAuth2User oAuth2User = oauthToken.getPrincipal();
+            try {
+                OAuth2User oAuth2User = oauthToken.getPrincipal();
 
-            // Validar atributos
-            Map<String, Object> attributes = oAuth2User.getAttributes();
-            if (attributes == null || attributes.isEmpty()) {
-                log.error("OAuth2 attributes are null or empty");
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid OAuth2 response");
-                return;
+                // Validar atributos
+                Map<String, Object> attributes = oAuth2User.getAttributes();
+                if (attributes == null || attributes.isEmpty()) {
+                    log.error("OAuth2 attributes are null or empty");
+                    handleError(response, "Invalid OAuth2 response - no attributes");
+                    return;
+                }
+
+                // Obter dados do usuário já processados pelo CustomOAuth2UserServiceAdapter
+                Object userIdObj = attributes.get("userId");
+                Object usernameObj = attributes.get("username");
+
+                if (userIdObj == null || usernameObj == null) {
+                    log.error("OAuth2 userId or username is missing. Attributes: {}", attributes.keySet());
+                    handleError(response, "Invalid OAuth2 response - missing user data");
+                    return;
+                }
+
+                Long userId = ((Number) userIdObj).longValue();
+                String username = (String) usernameObj;
+                String registrationId = oauthToken.getAuthorizedClientRegistrationId();
+                AuthProvider provider = AuthProvider.valueOf(registrationId.toUpperCase());
+
+                log.info("Processing OAuth2 success for user: {} (ID: {}) via provider: {}",
+                         username, userId, provider);
+
+                // Buscar usuário completo para gerar tokens
+                User user = oAuth2UserService.getUserById(userId);
+
+                // Gerar tokens JWT
+                String accessToken = jwtTokenService.generateAccessToken(user);
+                String refreshToken = jwtTokenService.generateRefreshToken(user, getClientIp(request));
+
+                // Registrar log de auditoria
+                securityAuditService.logLoginSuccess(
+                        user.getId(),
+                        user.getUsername(),
+                        getClientIp(request),
+                        request.getHeader("User-Agent")
+                );
+
+                log.info("OAuth2 login successful for user: {} via provider: {}", user.getUsername(), provider);
+
+                // Redirecionar para o frontend com tokens
+                String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
+                        .queryParam("accessToken", accessToken)
+                        .queryParam("refreshToken", refreshToken)
+                        .queryParam("tokenType", "Bearer")
+                        .build().toUriString();
+
+                getRedirectStrategy().sendRedirect(request, response, targetUrl);
+
+            } catch (Exception e) {
+                log.error("Error processing OAuth2 authentication success", e);
+                handleError(response, "Error processing OAuth2 login: " + e.getMessage());
             }
-
-            // Obter dados do usuário já processados pelo CustomOAuth2UserServiceAdapter
-            Long userId = ((Number) attributes.get("userId")).longValue();
-            String username = (String) attributes.get("username");
-            String registrationId = oauthToken.getAuthorizedClientRegistrationId();
-            AuthProvider provider = AuthProvider.valueOf(registrationId.toUpperCase());
-
-            // Buscar usuário completo para gerar tokens
-            User user = oAuth2UserService.getUserById(userId);
-
-            // Gerar tokens JWT
-            String accessToken = jwtTokenService.generateAccessToken(user);
-            String refreshToken = jwtTokenService.generateRefreshToken(user, getClientIp(request));
-
-            // Registrar log de auditoria
-            securityAuditService.logLoginSuccess(
-                    user.getId(),
-                    user.getUsername(),
-                    getClientIp(request),
-                    request.getHeader("User-Agent")
-            );
-
-            log.info("OAuth2 login successful for user: {} via provider: {}", user.getUsername(), provider);
-
-            // Redirecionar para o frontend com tokens
-            String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
-                    .queryParam("accessToken", accessToken)
-                    .queryParam("refreshToken", refreshToken)
-                    .queryParam("tokenType", "Bearer")
-                    .build().toUriString();
-
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
             super.onAuthenticationSuccess(request, response, authentication);
         }
+    }
+
+    private void handleError(HttpServletResponse response, String errorMessage) throws IOException {
+        log.error("OAuth2 error: {}", errorMessage);
+        String targetUrl = UriComponentsBuilder.fromUriString(redirectUri)
+                .queryParam("error", errorMessage)
+                .build().toUriString();
+        response.sendRedirect(targetUrl);
     }
 
     private String getClientIp(HttpServletRequest request) {

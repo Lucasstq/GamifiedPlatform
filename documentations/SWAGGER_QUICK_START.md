@@ -51,7 +51,7 @@ http://localhost:8080/v3/api-docs.yaml
 
 ### Opção 1: Login Tradicional (Username/Password)
 
-### 1. Fazer Login
+#### 1. Fazer Login
 ```bash
 POST /auth/login
 Body: {
@@ -60,17 +60,58 @@ Body: {
 }
 ```
 
-### 2. Copiar o Token
+#### 2. Copiar o Token
 - Copie o valor do campo `accessToken` da resposta
 
-### 3. Autorizar no Swagger
+#### 3. Autorizar no Swagger
 - Clique no botão **"Authorize"** 🔒 (canto superior direito)
 - Cole o token JWT (sem adicionar "Bearer ")
 - Clique em "Authorize" e depois "Close"
 
-### 4. Testar Endpoints
+#### 4. Testar Endpoints
 - Agora você pode testar qualquer endpoint protegido!
 - O token é automaticamente enviado em todas as requisições
+
+### Opção 2: Login OAuth2 (Google/GitHub)
+
+#### 1. Configurar OAuth2 (se ainda não configurou)
+Adicione as credenciais OAuth2 no arquivo `.env` ou como variáveis de ambiente:
+```env
+GOOGLE_CLIENT_ID=seu_google_client_id
+GOOGLE_CLIENT_SECRET=seu_google_client_secret
+GITHUB_CLIENT_ID=seu_github_client_id
+GITHUB_CLIENT_SECRET=seu_github_client_secret
+```
+
+#### 2. Fazer Login
+- Acesse no navegador:
+  - **Google**: `http://localhost:8080/oauth2/authorization/google`
+  - **GitHub**: `http://localhost:8080/oauth2/authorization/github`
+
+#### 3. Autorizar o Aplicativo
+- Você será redirecionado para a página de login do provedor
+- Autorize o aplicativo
+
+#### 4. Receber os Tokens
+- Após a autorização, você será redirecionado para `http://localhost:8080/oauth2/redirect`
+- Uma página HTML bonita exibirá seus tokens:
+  - **Access Token** (expira em 15 minutos)
+  - **Refresh Token** (expira em 7 dias)
+- Os tokens também são salvos automaticamente no localStorage do navegador
+
+#### 5. Usar no Swagger
+- Copie o Access Token da página
+- Vá para o Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Clique em "Authorize" 🔒
+- Cole o token e autorize
+- Pronto! Agora você pode testar os endpoints
+
+> **Nota para Produção**: Quando integrar com um frontend real, configure a URL de redirecionamento em `application.yaml`:
+> ```yaml
+> app:
+>   oauth2:
+>     redirect-uri: http://localhost:3000/oauth2/redirect  # ou sua URL de produção
+> ```
 
 ## 📱 Para o Frontend
 

@@ -46,7 +46,10 @@ Bem-vindo à documentação completa da API Gamified Platform!
 ### Sistema de Autenticação
 - [API Endpoints Documentation](API_ENDPOINTS_DOCUMENTATION.md) - Todos os endpoints da API
 - [Security Annotations](SECURITY_ANNOTATIONS.md) - Sistema de permissões e roles
-- [OAuth2 Guide](OAUTH2_GUIDE.md) - Login Social com Google/GitHub ⭐ **JÁ IMPLEMENTADO**
+- [OAuth2 Quick Fix](OAUTH2_QUICK_FIX.md) - ⭐ **NOVO!** Guia rápido OAuth2 (Google/GitHub)
+- [OAuth2 Troubleshooting](OAUTH2_TROUBLESHOOTING.md) - ⭐ **NOVO!** Resolução de problemas OAuth2
+- [OAuth2 Guide](OAUTH2_GUIDE.md) - Login Social completo ✅ **JÁ IMPLEMENTADO**
+- [OAuth2 Integration](OAUTH2_INTEGRATION.md) - Detalhes técnicos de integração
 
 ### Sistema de Gamificação
 - [Level API Endpoints](LEVEL_API_ENDPOINTS.md) - Sistema de níveis
