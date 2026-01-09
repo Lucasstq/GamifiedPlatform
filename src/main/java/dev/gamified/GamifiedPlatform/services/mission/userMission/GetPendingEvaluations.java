@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.services.mission.userMisson;
+package dev.gamified.GamifiedPlatform.services.mission.userMission;
 
 import dev.gamified.GamifiedPlatform.dtos.response.user.UserMissionResponse;
 import dev.gamified.GamifiedPlatform.mapper.MissionMapper;

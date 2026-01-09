@@ -1,4 +1,4 @@
-package dev.gamified.GamifiedPlatform.services.mission.userMisson;
+package dev.gamified.GamifiedPlatform.services.mission.userMission;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
