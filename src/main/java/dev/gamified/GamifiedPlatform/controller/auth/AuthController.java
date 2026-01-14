@@ -3,12 +3,16 @@ package dev.gamified.GamifiedPlatform.controller.auth;
 import dev.gamified.GamifiedPlatform.dtos.request.auth.LoginRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.auth.RefreshTokenRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.auth.ResendVerificationEmailRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserChangePasswordRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserForgetPasswordRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.user.UserRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.login.LoginResponse;
 import dev.gamified.GamifiedPlatform.dtos.response.user.UserResponse;
 import dev.gamified.GamifiedPlatform.services.auth.AuthService;
 import dev.gamified.GamifiedPlatform.services.email.EmailVerificationService;
 import dev.gamified.GamifiedPlatform.services.user.CreateUserService;
+import dev.gamified.GamifiedPlatform.services.user.ForgotPasswordService;
+import dev.gamified.GamifiedPlatform.services.user.ResetPasswordConfirmService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,6 +37,8 @@ public class AuthController {
     private final AuthService authService;
     private final CreateUserService createUserService;
     private final EmailVerificationService emailVerificationService;
+    private final ForgotPasswordService forgotPasswordService;
+    private final ResetPasswordConfirmService resetPasswordConfirmService;
 
     @PostMapping("/login")
     @Operation(
@@ -56,6 +62,38 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/forgot-password")
+    @Operation(
+            summary = "Esqueci minha senha",
+            description = "Inicia o processo de recuperação de senha enviando um email com instruções"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Instruções de recuperação enviadas por email"),
+    })
+    @SecurityRequirement(name = "")
+    public ResponseEntity<Void> forgotPassword(@RequestBody UserForgetPasswordRequest request) {
+        forgotPasswordService.execute(request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(
+            summary = "Redefinir senha",
+            description = "Redefine a senha do usuário usando o token enviado por email"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Senha redefinida com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Token inválido ou expirado",
+                    content = @Content)
+    })
+    @SecurityRequirement(name = "")
+    public ResponseEntity<Void> resetPassword(@RequestParam String token,
+                                              @Valid @RequestBody UserChangePasswordRequest request) {
+        resetPasswordConfirmService.execute(token, request);
+        return ResponseEntity.noContent().build();
+    }
+
+
     @PostMapping("/refresh")
     @Operation(
             summary = "Renovar token de acesso",
@@ -69,7 +107,7 @@ public class AuthController {
     })
     @SecurityRequirement(name = "")
     public ResponseEntity<LoginResponse> refreshToken(@RequestBody @Valid RefreshTokenRequest request,
-                                                       HttpServletRequest httpRequest) {
+                                                      HttpServletRequest httpRequest) {
         String ipAddress = getClientIp(httpRequest);
         LoginResponse response = authService.refreshAccessToken(request.refreshToken(), ipAddress);
         return ResponseEntity.ok(response);

@@ -1,13 +1,15 @@
 package dev.gamified.GamifiedPlatform.controller.user;
 
 import dev.gamified.GamifiedPlatform.config.annotations.CanDeleteProfile;
+import dev.gamified.GamifiedPlatform.config.annotations.CanReadProfile;
 import dev.gamified.GamifiedPlatform.config.annotations.CanReadUsers;
 import dev.gamified.GamifiedPlatform.config.annotations.CanWriteProfile;
 import dev.gamified.GamifiedPlatform.dtos.request.user.DeleteUserRequest;
-import dev.gamified.GamifiedPlatform.dtos.request.user.UserChangePasswordRequest;
+import dev.gamified.GamifiedPlatform.dtos.request.user.UserAuthenticateChangePasswordRequest;
 import dev.gamified.GamifiedPlatform.dtos.request.user.UserUpdateRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.user.PublicUserProfileResponse;
 import dev.gamified.GamifiedPlatform.dtos.response.user.UserResponse;
+import dev.gamified.GamifiedPlatform.dtos.response.user.UserSimpleResponse;
 import dev.gamified.GamifiedPlatform.services.user.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,33 +58,33 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @CanReadUsers
+    @CanReadProfile
     @Operation(
             summary = "Buscar usuário por ID",
-            description = "Retorna informações detalhadas de um usuário específico. Requer permissão 'users:read'."
+            description = "Retorna informações detalhadas de um usuário específico. Requer permissão 'profile:read'."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário encontrado",
                     content = @Content(schema = @Schema(implementation = UserResponse.class))),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<UserResponse> getUserById(
+    public ResponseEntity<UserSimpleResponse> getUserById(
             @Parameter(description = "ID do usuário", required = true) @PathVariable Long id) {
         return ResponseEntity.ok(getUserById.execute(id));
     }
 
     @GetMapping("/search")
-    @CanReadUsers
+    @CanReadProfile
     @Operation(
             summary = "Buscar usuário por username",
-            description = "Busca um usuário pelo nome de usuário. Requer permissão 'users:read'."
+            description = "Busca um usuário pelo nome de usuário. Requer permissão 'profile:read'."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Usuário encontrado",
                     content = @Content(schema = @Schema(implementation = UserResponse.class))),
             @ApiResponse(responseCode = "404", description = "Usuário não encontrado")
     })
-    public ResponseEntity<UserResponse> getUserByUsername(
+    public ResponseEntity<UserSimpleResponse> getUserByUsername(
             @Parameter(description = "Nome de usuário", required = true) @RequestParam String username) {
         return ResponseEntity.ok(getUserByUsername.execute(username));
     }
@@ -116,7 +118,7 @@ public class UserController {
     })
     public ResponseEntity<Void> changePassword(
             @Parameter(description = "ID do usuário", required = true) @PathVariable Long id,
-            @Valid @RequestBody UserChangePasswordRequest request) {
+            @Valid @RequestBody UserAuthenticateChangePasswordRequest request) {
         changePasswordService.execute(id, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
