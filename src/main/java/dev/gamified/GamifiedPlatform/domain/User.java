@@ -30,6 +30,7 @@ public class User {
 
     private String password;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private AuthProvider provider = AuthProvider.LOCAL;
@@ -43,11 +44,13 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Builder.Default
     private Boolean active = false;
 
     @Enumerated(EnumType.STRING)
     private Roles role;
 
+    @Builder.Default
     @Column(name = "email_verified")
     private Boolean emailVerified = false;
 
@@ -68,8 +71,15 @@ public class User {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
+    @Builder.Default
     @Column(name = "deleted")
     private Boolean deleted = false;
+
+    @Column(name = "password_reset_token")
+    private String passwordResetToken;
+
+    @Column(name = "password_reset_token_expires_at")
+    private LocalDateTime passwordResetTokenExpiresAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

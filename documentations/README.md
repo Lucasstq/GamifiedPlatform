@@ -2,6 +2,65 @@
 
 Bem-vindo à documentação completa da API Gamified Platform!
 
+---
+
+## ⚡ **[START HERE - Leia Isto Primeiro!](START_HERE.md)** ⚡
+
+> **📖 Leitura de 3 minutos que vai te orientar sobre todos os documentos abaixo.**
+> 
+> **👉 Se está começando sua revisão agora, CLIQUE AQUI PRIMEIRO! 👈**
+
+---
+
+## 🎓 Para Estudar e Entender a Aplicação
+
+### 🎁 **[Como Usar o Kit de Revisão](COMO_USAR_O_KIT.md)** - Guia de Uso Completo
+> Explica como usar todos os 7 documentos de forma eficiente. Leia depois do START_HERE.
+
+---
+
+### **NOVO!** 🗺️ Kit Completo de Revisão (7 Documentos)
+
+> **Criado especialmente para sua revisão de segunda-feira!**
+
+1. **[⭐ Plano para Segunda-Feira](PLANO_SEGUNDA_FEIRA.md)** 🌅 **SEU GUIA HORA-A-HORA**
+   - Plano hora-a-hora do primeiro dia (8h às 17h)
+   - O que fazer exatamente em cada hora
+   - Testes práticos intercalados
+   - Breaks programados
+   - **Use este amanhã de manhã!**
+
+2. **[📖 Guia de Bolso](GUIA_DE_BOLSO.md)** 📱 **SEMPRE À MÃO**
+   - Resumo compacto de 1 página
+   - Todas as informações essenciais
+   - Comandos úteis e troubleshooting
+   - **Imprima ou tenha no celular!**
+
+3. **[🖼️ Poster de Estudo](POSTER_DE_ESTUDO.md)** 🎯 **COLE NA PAREDE**
+   - Visual completo da arquitetura
+   - Fluxos detalhados em ASCII art
+   - Top 10 arquivos para ler
+   - **Imprima e cole na sua mesa!**
+
+4. **[📚 Roteiro Completo](ROTEIRO_REVISAO_COMPLETA.md)** 📖 **GUIA DETALHADO**
+   - 8 fases de estudo detalhadas
+   - 20 horas de conteúdo estruturado
+   - Perguntas para responder
+   - Documentações para ler
+   - **Seu guia principal!**
+
+5. **[✅ Checklist de Revisão](CHECKLIST_REVISAO.md)** ☑️ **ACOMPANHAMENTO**
+   - Checklist completo das 8 fases
+   - Marque cada item conforme aprende
+   - Testes práticos de validação
+   - Auto-avaliação por camada
+   - **Monitore seu progresso!**
+
+**BÔNUS:**
+- **[🗺️ Mapa Mental da Arquitetura](MAPA_MENTAL_ARQUITETURA.md)** - Referência visual detalhada
+
+---
+
 ## 🚀 Para Começar Rapidamente
 
 1. **[Guia Rápido Swagger](SWAGGER_QUICK_START.md)** ⭐ COMECE AQUI!

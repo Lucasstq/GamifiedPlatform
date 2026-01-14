@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Levels {
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "order_level", unique = true, nullable = false)
