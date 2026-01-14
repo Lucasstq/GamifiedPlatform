@@ -1,8 +1,10 @@
 package dev.gamified.GamifiedPlatform.services.auth;
 
 import dev.gamified.GamifiedPlatform.domain.RefreshToken;
+import dev.gamified.GamifiedPlatform.domain.Scopes;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.repository.RefreshTokenRepository;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Getter
 public class JwtTokenService {
 
     private final JwtEncoder jwtEncoder;
@@ -31,7 +34,7 @@ public class JwtTokenService {
         Instant now = Instant.now();
 
         String scopes = user.getScopes().stream()
-                .map(scope -> scope.getName())
+                .map(Scopes::getName)
                 .collect(Collectors.joining(" "));
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -62,12 +65,5 @@ public class JwtTokenService {
         return token;
     }
 
-    public Long getAccessTokenExpiration() {
-        return accessTokenExpiration;
-    }
-
-    public Long getRefreshTokenExpiration() {
-        return refreshTokenExpiration;
-    }
 }
 

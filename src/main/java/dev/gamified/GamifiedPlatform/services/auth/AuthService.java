@@ -45,9 +45,18 @@ public class AuthService {
         User user = userRepository.findUserByUsername(request.username())
                 .orElseThrow(() -> {
                     // Log de falha de login (usuário não encontrado)
-                    auditService.logLoginFailure(request.username(), ipAddress, userAgent, "User not found");
+                    auditService.logLoginFailure(request.username(), ipAddress, userAgent, "User not found" +
+                            request.username());
                     return new BusinessException("Invalid username or password");
                 });
+
+        // Validação extra: verificar se provider está configurado corretamente
+        if (user.getProvider() == null) {
+            log.error("User {} has NULL provider - database inconsistency detected", user.getUsername());
+            auditService.logSuspiciousActivity(user.getId(), user.getUsername(), ipAddress,
+                "Login attempted with NULL provider - database inconsistency");
+            throw new BusinessException("Account configuration error. Please contact support.");
+        }
 
         try {
             isPasswordCorrect(request.password(), user.getPassword());
