@@ -64,7 +64,10 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/login", "/auth/register",
                                         "/auth/verify-email", "/auth/resend-verification",
                                         "/auth/refresh", "/auth/logout",
-                                        "/oauth2/**", "/login/oauth2/**").permitAll()
+                                        "/auth/forgot-password", "/auth/reset-password",
+                                        "/oauth2/**", "/login/oauth2/**",
+                                        "/swagger-ui/**", "/swagger-ui.html",
+                                        "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
