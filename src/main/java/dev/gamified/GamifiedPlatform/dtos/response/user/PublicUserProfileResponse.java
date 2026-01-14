@@ -8,7 +8,6 @@ import java.util.List;
 
 @Builder
 public record PublicUserProfileResponse(
-        Long id,
         String username,
         String avatarUrl,
         LocalDateTime createdAt,

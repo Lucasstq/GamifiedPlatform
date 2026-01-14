@@ -5,9 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record UserAuthenticateChangePasswordRequest(
-        @NotBlank(message = "Current password cannot be null")
-        String currentPassword,
+public record UserChangePasswordRequest(
         @NotBlank(message = "New password cannot be null")
         @Size(min = 8, message = "New password must be at least 8 characters long")
         String newPassword,
