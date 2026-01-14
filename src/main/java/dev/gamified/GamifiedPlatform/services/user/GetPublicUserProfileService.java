@@ -1,13 +1,10 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
-import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeProgressResponse;
 import dev.gamified.GamifiedPlatform.dtos.response.user.PublicUserProfileResponse;
 import dev.gamified.GamifiedPlatform.dtos.response.user.UserBadgeResponse;
-import dev.gamified.GamifiedPlatform.enums.Roles;
-import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.PlayerCharacterRepository;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
@@ -44,17 +41,15 @@ public class GetPublicUserProfileService {
     public PublicUserProfileResponse execute(Long userId) {
         log.info("Fetching public profile with badges for user {}", userId);
 
-        validateUserPermission(userId);
-
         User user = findUser(userId);
         PlayerCharacter character = findPlayerCharacter(userId);
         // Buscar todos os badges do usuário (máximo de 100 para o perfil público)
-        Page<UserBadgeResponse> badgesPage = getUserBadgesService.execute(userId, PageRequest.of(0, 100));
+        Page<UserBadgeResponse> badgesPage = getUserBadgesService.execute(userId, PageRequest.of(0,
+                100));
         List<UserBadgeResponse> badges = badgesPage.getContent();
         BadgeProgressResponse progress = getBadgeProgressService.execute(userId);
 
         return PublicUserProfileResponse.builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .avatarUrl(user.getAvatarUrl())
                 .createdAt(user.getCreatedAt())
@@ -64,16 +59,6 @@ public class GetPublicUserProfileService {
                 .badges(badges)
                 .badgeProgress(progress)
                 .build();
-    }
-
-    /*
-     * Verifica se o usuário autenticado tem permissão.
-     * Permite acesso se for o próprio usuário, admin ou mentor.
-     */
-    private void validateUserPermission(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId) && !SecurityUtils.hasRole(Roles.ROLE_MENTOR)) {
-            throw new AccessDeniedException("You do not have permission to view this user's profile");
-        }
     }
 
     /*

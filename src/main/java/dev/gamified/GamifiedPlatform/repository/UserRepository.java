@@ -15,7 +15,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     /*
      Retorna apenas os campos necessários para login e geração de token JWT
      */
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.scopes WHERE u.username = :username AND u.deleted = false")
+    @Query(value = "SELECT u FROM User u WHERE u.username = :username AND u.active = true")
     Optional<User> findUserByUsername(@Param("username") String username);
 
     /*
@@ -53,5 +53,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
      */
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.scopes WHERE u.provider = :provider AND u.providerId = :providerId AND u.deleted = false")
     Optional<User> findByProviderAndProviderId(@Param("provider") AuthProvider provider, @Param("providerId") String providerId);
+
+    Optional<User> findByPasswordResetToken(String token);
 
 }

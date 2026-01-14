@@ -22,7 +22,6 @@ public class DeleteUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final DeletePlayerCharacterService deleteCharacter;
 
     @Transactional
     public void execute(Long userId, String password) {
@@ -37,7 +36,6 @@ public class DeleteUserService {
         }
 
         validatePassword(password, existingUser.getPassword());
-        deleteAssociatedCharacter(existingUser);
 
         // Soft delete
         existingUser.setDeleted(true);
@@ -59,13 +57,6 @@ public class DeleteUserService {
     private void validatePassword(String rawPassword, String encodedPassword) {
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new InvalidPasswordException("Invalid password. Cannot delete user.");
-        }
-    }
-
-    // Deletar o personagem associado se existir
-    private void deleteAssociatedCharacter(User user) {
-        if (user.getPlayerCharacter() != null) {
-            deleteCharacter.execute(user.getPlayerCharacter());
         }
     }
 
