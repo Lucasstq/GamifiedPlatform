@@ -83,7 +83,7 @@ public class EmailService {
 
     private String buildPasswordResetEmailBody(String username, String token) {
         // Monta a URL completa de redefinição concatenando base URL + endpoint + token
-        String resetUrl = baseUrl + "/auth/reset-password?token=" + token;
+        String resetUrl = baseUrl + "/reset-password?token=" + token;
 
         return String.format("""
                 Olá, %s! 👋
