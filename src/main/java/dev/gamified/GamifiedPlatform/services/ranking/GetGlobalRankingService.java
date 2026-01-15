@@ -16,9 +16,8 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +31,7 @@ public class GetGlobalRankingService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final RefreshRankingCacheService refreshRankingCache;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Page<RankingResponse> execute(Pageable pageable) {
         log.info("Fetching global ranking - page: {}, size: {}",
                 pageable.getPageNumber(), pageable.getPageSize());
@@ -54,18 +53,38 @@ public class GetGlobalRankingService {
             return new PageImpl<>(List.of(), pageable, cacheSize != null ? cacheSize : 0);
         }
 
+        //Converte IDs para List<Long>
+        List<Long> charIds = characterIds.stream()
+                .map(id -> ((Number) id).longValue())
+                .collect(Collectors.toList());
+
+        List<PlayerCharacter> characters = playerCharacterRepository.findAllByIdInWithUser(charIds);
+
+        //Cria mapa de characters por ID para manter a ordem do ranking
+        Map<Long, PlayerCharacter> characterMap = characters.stream()
+                .collect(Collectors.toMap(PlayerCharacter::getId, c -> c));
+
+        //Coleta todos os níveis únicos necessários
+        Set<Integer> levelOrders = characters.stream()
+                .map(PlayerCharacter::getLevel)
+                .collect(Collectors.toSet());
+
+        //Busca todos os níveis em uma única query
+        Map<Integer, Levels> levelsMap = levelRepository.findAllByOrderLevelIn(levelOrders)
+                .stream()
+                .collect(Collectors.toMap(Levels::getOrderLevel, l -> l));
+
+        //Monta a resposta mantendo a ordem do ranking
         List<RankingResponse> ranking = new ArrayList<>();
         int position = (pageable.getPageNumber() * pageable.getPageSize()) + 1;
         Long currentUserId = SecurityUtils.getCurrentUserId().orElse(null);
 
-        for (Object characterId : characterIds) {
-            Long charId = ((Number) characterId).longValue();
-            PlayerCharacter character = playerCharacterRepository.findById(charId).orElse(null);
+        for (Long charId : charIds) {
+            PlayerCharacter character = characterMap.get(charId);
 
             if (character != null) {
                 User user = character.getUser();
-                Levels level = levelRepository.findTopByOrderLevelLessThanEqualOrderByOrderLevelDesc(character.getLevel())
-                        .orElse(null);
+                Levels level = levelsMap.get(character.getLevel());
 
                 ranking.add(RankingResponse.builder()
                         .position(position)
@@ -82,6 +101,7 @@ public class GetGlobalRankingService {
             }
         }
 
+        log.debug("Ranking fetched with {} entries using optimized batch queries", ranking.size());
         return new PageImpl<>(ranking, pageable, cacheSize != null ? cacheSize : 0);
     }
 }
