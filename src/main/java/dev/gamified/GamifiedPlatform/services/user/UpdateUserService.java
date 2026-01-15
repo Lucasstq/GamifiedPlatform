@@ -1,10 +1,9 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
-import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.request.user.UserUpdateRequest;
 import dev.gamified.GamifiedPlatform.dtos.response.user.UserResponse;
-import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.UserMapper;
@@ -22,7 +21,7 @@ public class UpdateUserService {
     @Transactional
     public UserResponse execute(Long userId, UserUpdateRequest request) {
 
-        isOwnerOrAdmin(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
 
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -35,13 +34,6 @@ public class UpdateUserService {
 
         User updatedUser = userRepository.save(existingUser);
         return UserMapper.toResponse(updatedUser);
-    }
-
-    // Verifica se o usuário autenticado tem permissão para atualizar
-    private void isOwnerOrAdmin(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission to update this user");
-        }
     }
 
 

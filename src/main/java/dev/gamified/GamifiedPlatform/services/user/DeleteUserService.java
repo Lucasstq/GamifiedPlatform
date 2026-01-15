@@ -1,12 +1,10 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
-import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.domain.User;
-import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.InvalidPasswordException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
-import dev.gamified.GamifiedPlatform.services.playerCharacter.DeletePlayerCharacterService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +24,7 @@ public class DeleteUserService {
     @Transactional
     public void execute(Long userId, String password) {
 
-        isOwnerOrAdmin(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
 
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -46,12 +44,6 @@ public class DeleteUserService {
         log.info("User {} soft deleted successfully", userId);
     }
 
-    // Verifica se o usuário autenticado tem permissão para deletar
-    private void isOwnerOrAdmin(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission to delete this user");
-        }
-    }
 
     // Validar se a senha fornecida está correta para exclusão do usuário
     private void validatePassword(String rawPassword, String encodedPassword) {
