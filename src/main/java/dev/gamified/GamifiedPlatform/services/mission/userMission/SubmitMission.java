@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.mission.userMission;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.UserMission;
 import dev.gamified.GamifiedPlatform.dtos.request.mission.MissionSubmissionRequest;
@@ -37,7 +38,7 @@ public class SubmitMission {
 
         log.info("User {} submitting mission {}", userId, missionId);
 
-        validateUserPermission(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
 
         UserMission userMission = userMissionRepository.findByUserIdAndMissionId(userId, missionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Mission not started by user."));
@@ -53,12 +54,6 @@ public class SubmitMission {
         log.info("Mission {} successfully submitted by user {}", missionId, userId);
 
         return MissionMapper.toUserMissionResponse(savedUserMission);
-    }
-
-    private void validateUserPermission(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new BusinessException("User not authorized to submit this mission.");
-        }
     }
 
     private void userCanSubmitMission(UserMission userMission) {

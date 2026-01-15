@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
+import dev.gamified.GamifiedPlatform.constants.BusinessConstants;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
@@ -26,13 +27,14 @@ public class CalculateLevelProgressService {
             int xpInCurrentLevel = currentXp - currentLevel.getXpRequired();
             int xpNeededForNextLevel = nextLevel.xpRequired() - currentLevel.getXpRequired();
 
-            if (xpNeededForNextLevel <= 0) return 100.0;
+            if (xpNeededForNextLevel <= 0) return BusinessConstants.MAX_PROGRESS_PERCENTAGE;
 
             double progress = (double) xpInCurrentLevel / xpNeededForNextLevel * 100;
-            return Math.min(100.0, Math.max(0.0, progress));
+            return Math.min(BusinessConstants.MAX_PROGRESS_PERCENTAGE,
+                    Math.max(BusinessConstants.MIN_PROGRESS_PERCENTAGE, progress));
         } catch (ResourceNotFoundException e) {
             // Está no nível máximo
-            return 100.0;
+            return BusinessConstants.MAX_PROGRESS_PERCENTAGE;
         }
     }
 

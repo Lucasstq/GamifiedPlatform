@@ -1,9 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.badge;
 
-import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.dtos.response.user.UserBadgeResponse;
-import dev.gamified.GamifiedPlatform.enums.Roles;
-import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.mapper.BadgeMapper;
 import dev.gamified.GamifiedPlatform.repository.UserBadgeRepository;
@@ -40,7 +38,7 @@ public class GetUserBadgesService {
         log.info("Fetching badges for user {} - page: {}, size: {}",
                 userId, pageable.getPageNumber(), pageable.getPageSize());
 
-        validateUserPermission(userId);
+        PermissionValidator.validateResourceOwnerAdminOrMentor(userId);
         validateUserExists(userId);
 
         List<UserBadgeResponse> allBadges = userBadgeRepository.findAllByUserId(userId).stream()
@@ -54,15 +52,6 @@ public class GetUserBadgesService {
         return new PageImpl<>(pageContent, pageable, allBadges.size());
     }
 
-    /*
-     * Verifica se o usuário autenticado tem permissão para ver os badges.
-     * Permite acesso se for o próprio usuário, admin ou mentor.
-     */
-    private void validateUserPermission(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId) && !SecurityUtils.hasRole(Roles.ROLE_MENTOR)) {
-            throw new AccessDeniedException("You do not have permission to view this user's badges");
-        }
-    }
 
     /*
      * Valida se o usuário existe no sistema.

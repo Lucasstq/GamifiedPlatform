@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.mission.userMission;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.Mission;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
@@ -47,7 +48,7 @@ public class StartMissions {
 
         log.info("User {} started mission {}", currentUser.getId(), missionId);
 
-        validateUserPermission(currentUser.getId());
+        PermissionValidator.validateResourceOwnerOrAdmin(currentUser.getId());
 
         Mission mission = findMission(missionId);
 
@@ -62,16 +63,6 @@ public class StartMissions {
         log.info("Mission {} successfully initiated by user {}", missionId, currentUser.getId());
 
         return MissionMapper.toUserMissionResponse(savedUserMission);
-    }
-
-    /*
-     * Valida se o usuário autenticado tem permissão para iniciar a missão.
-     * Verifica se é o dono do recurso ou um administrador.
-     */
-    private void validateUserPermission(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission this feature");
-        }
     }
 
     /*

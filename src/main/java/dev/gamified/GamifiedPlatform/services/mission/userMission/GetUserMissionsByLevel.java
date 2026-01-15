@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.mission.userMission;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.Mission;
 import dev.gamified.GamifiedPlatform.domain.User;
@@ -39,7 +40,7 @@ public class GetUserMissionsByLevel {
 
         log.info("Searching for user missions at level {}", levelId);
 
-        isOwnerOrAdmin(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
         findResources(userId, levelId);
 
         List<UserMission> userMissions = findUserMissions(userId, levelId);
@@ -47,13 +48,6 @@ public class GetUserMissionsByLevel {
         return userMissions.stream()
                 .map(MissionMapper::toUserMissionResponse)
                 .collect(Collectors.toList());
-    }
-
-    // Verifica se o usuário autenticado é o dono do recurso ou um admin
-    private void isOwnerOrAdmin(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission to update this user");
-        }
     }
 
     private void findResources(Long userId, Long levelId) {

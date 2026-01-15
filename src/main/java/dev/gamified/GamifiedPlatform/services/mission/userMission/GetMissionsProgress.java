@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.mission.userMission;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.dtos.response.missions.MissionProgressResponse;
@@ -36,7 +37,7 @@ public class GetMissionsProgress {
 
         log.info("Calculating user mission progress {} at level {}", userId, levelId);
 
-        validateUserPermission(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
 
         Levels level = findLevel(levelId);
         Long totalMissions = getTotalMissions(levelId);
@@ -46,12 +47,6 @@ public class GetMissionsProgress {
         boolean canUnlockBoss = canUnlockBoss(progressPercentage);
 
         return buildMissionProgressResponse(level, totalMissions, completedMissions, progressPercentage, canUnlockBoss);
-    }
-
-    private void validateUserPermission(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission this feature");
-        }
     }
 
     /*

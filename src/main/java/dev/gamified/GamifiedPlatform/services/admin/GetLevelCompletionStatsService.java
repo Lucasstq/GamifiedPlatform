@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.admin;
 
+import dev.gamified.GamifiedPlatform.constants.BusinessConstants;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.domain.Mission;
 import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelCompletionStatsResponse;
@@ -35,9 +36,10 @@ public class GetLevelCompletionStatsService {
             Long totalUsers = userMissionRepository.countDistinctUsersByLevelId(level.getId());
 
             // Calcula usuários que completaram o nível (simplificado)
-            Long usersCompleted = 0L; // Implementar lógica complexa se necessário
+            Long usersCompleted = 0L;
 
-            Double completionRate = totalUsers > 0 ? (usersCompleted.doubleValue() / totalUsers) * 100 : 0.0;
+            Double completionRate = totalUsers > 0 ? (usersCompleted.doubleValue() / totalUsers) *
+                    BusinessConstants.PERCENTAGE_MULTIPLIER : BusinessConstants.DEFAULT_RATE;
 
             List<LevelCompletionStatsResponse.MissionStatsInLevel> missionStats =
                     getMissionStatsForLevel(level.getId());
@@ -50,7 +52,7 @@ public class GetLevelCompletionStatsService {
                     .usersCompleted(usersCompleted)
                     .completionRate(completionRate)
                     .totalMissions(totalMissions)
-                    .averageProgress(0.0) // Calcular se necessário
+                    .averageProgress(BusinessConstants.DEFAULT_RATE)
                     .missionStats(missionStats)
                     .build());
         }
@@ -68,7 +70,8 @@ public class GetLevelCompletionStatsService {
             Long failed = userMissionRepository.countFailedByMissionId(mission.getId());
 
             Double completionRate = totalAttempts > 0 ?
-                    (completed.doubleValue() / totalAttempts) * 100 : 0.0;
+                    (completed.doubleValue() / totalAttempts) * BusinessConstants.PERCENTAGE_MULTIPLIER :
+                    BusinessConstants.DEFAULT_RATE;
 
             stats.add(LevelCompletionStatsResponse.MissionStatsInLevel.builder()
                     .missionId(mission.getId())

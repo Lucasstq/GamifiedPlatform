@@ -1,6 +1,8 @@
 package dev.gamified.GamifiedPlatform.services.badge;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
+import dev.gamified.GamifiedPlatform.constants.BusinessConstants;
 import dev.gamified.GamifiedPlatform.dtos.response.badges.BadgeProgressResponse;
 import dev.gamified.GamifiedPlatform.enums.Roles;
 import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
@@ -34,7 +36,7 @@ public class GetBadgeProgressService {
     public BadgeProgressResponse execute(Long userId) {
         log.info("Calculating badge progress for user {}", userId);
 
-        validateUserPermission(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
         validateUserExists(userId);
 
         Long totalBadges = badgeRepository.count();
@@ -47,7 +49,8 @@ public class GetBadgeProgressService {
                 .totalBadges(totalBadges)
                 .unlockedBadges(unlockedBadges)
                 .remainingBadges(remainingBadges)
-                .progressPercentage(Math.round(progressPercentage * 100.0) / 100.0)
+                .progressPercentage(Math.round(progressPercentage * BusinessConstants.MAX_PROGRESS_PERCENTAGE)
+                        / BusinessConstants.MAX_PROGRESS_PERCENTAGE)
                 .build();
     }
 
@@ -56,19 +59,9 @@ public class GetBadgeProgressService {
      */
     private double calculateProgressPercentage(Long total, Long unlocked) {
         if (total == 0) {
-            return 0.0;
+            return BusinessConstants.MIN_PROGRESS_PERCENTAGE;
         }
-        return (unlocked.doubleValue() / total.doubleValue()) * 100.0;
-    }
-
-    /*
-     * Verifica se o usuário autenticado tem permissão.
-     * Permite acesso se for o próprio usuário, admin ou mentor.
-     */
-    private void validateUserPermission(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId) && !SecurityUtils.hasRole(Roles.ROLE_MENTOR)) {
-            throw new AccessDeniedException("You do not have permission to view this user's badge progress");
-        }
+        return (unlocked.doubleValue() / total.doubleValue()) * BusinessConstants.MAX_PROGRESS_PERCENTAGE;
     }
 
     /*

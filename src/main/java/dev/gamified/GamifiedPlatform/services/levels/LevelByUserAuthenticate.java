@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.levels;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.dtos.response.levels.LevelResponse;
@@ -21,19 +22,13 @@ public class LevelByUserAuthenticate {
      * Retorna os detalhes do nível alcançado baseado no XP do personagem.
      */
     public LevelResponse execute(Long userId) {
-        validateResourceOwnerOrAdmin(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
 
         PlayerCharacter character = playerCharacterRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Character not found for user with id: " + userId));
 
         // Calcula qual nível da tabela de níveis o personagem alcançou baseado no XP
         return calculateLevelByXp.execute(character.getXp());
-    }
-
-    private void validateResourceOwnerOrAdmin(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission to access this user's level information");
-        }
     }
 
 }
