@@ -109,7 +109,9 @@ public class AuthController {
     public ResponseEntity<LoginResponse> refreshToken(@RequestBody @Valid RefreshTokenRequest request,
                                                       HttpServletRequest httpRequest) {
         String ipAddress = getClientIp(httpRequest);
-        LoginResponse response = authService.refreshAccessToken(request.refreshToken(), ipAddress);
+        String userAgent = httpRequest.getHeader("User-Agent");
+
+        LoginResponse response = authService.refreshAccessToken(request.refreshToken(), ipAddress, userAgent);
         return ResponseEntity.ok(response);
     }
 

@@ -32,9 +32,6 @@ public class RefreshTokenService {
      */
     @Transactional
     public RefreshToken createRefreshToken(User user, String ipAddress, String userAgent) {
-        // Revogar tokens antigos do usuário
-        refreshTokenRepository.revokeAllByUserId(user.getId());
-
         String token = UUID.randomUUID().toString();
 
         RefreshToken refreshToken = RefreshToken.builder()
@@ -56,6 +53,7 @@ public class RefreshTokenService {
     /**
      * Valida e retorna um refresh token.
      */
+    @Transactional(readOnly = true)
     public RefreshToken validateRefreshToken(String token) {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> new BusinessException("Invalid refresh token"));
@@ -73,6 +71,11 @@ public class RefreshTokenService {
         }
 
         return refreshToken;
+    }
+
+    @Transactional
+    public void saveRevokedToken(RefreshToken refreshToken) {
+        refreshTokenRepository.save(refreshToken);
     }
 
     /**
