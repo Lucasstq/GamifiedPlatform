@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.admin;
 
+import dev.gamified.GamifiedPlatform.constants.BusinessConstants;
 import dev.gamified.GamifiedPlatform.domain.Mission;
 import dev.gamified.GamifiedPlatform.domain.Boss;
 import dev.gamified.GamifiedPlatform.dtos.response.admin.AdminDashboardResponse;
@@ -55,30 +56,30 @@ public class GetAdminDashboardService {
     private Double calculateAverageCompletionRate() {
         List<Mission> allMissions = missionRepository.findAll();
         if (allMissions.isEmpty()) {
-            return 0.0;
+            return BusinessConstants.DEFAULT_RATE;
         }
 
-        double totalCompletionRate = 0.0;
+        double totalCompletionRate = BusinessConstants.DEFAULT_RATE;
         int missionCount = 0;
 
         for (Mission mission : allMissions) {
             Long totalAttempts = userMissionRepository.countByMissionId(mission.getId());
             if (totalAttempts > 0) {
                 Long completed = userMissionRepository.countCompletedByMissionId(mission.getId());
-                double completionRate = (completed.doubleValue() / totalAttempts) * 100;
+                double completionRate = (completed.doubleValue() / totalAttempts) * BusinessConstants.PERCENTAGE_MULTIPLIER;
                 totalCompletionRate += completionRate;
                 missionCount++;
             }
         }
 
-        return missionCount > 0 ? totalCompletionRate / missionCount : 0.0;
+        return missionCount > 0 ? totalCompletionRate / missionCount : BusinessConstants.DEFAULT_RATE;
     }
 
     private AdminDashboardResponse.MissionDifficultyStats getHardestMission() {
         List<Mission> allMissions = missionRepository.findAll();
 
         Mission hardest = null;
-        double highestFailureRate = 0.0;
+        double highestFailureRate = BusinessConstants.INITIAL_FAILURE_RATE;
         long maxFailedAttempts = 0L;
         long maxTotalAttempts = 0L;
 
@@ -86,7 +87,7 @@ public class GetAdminDashboardService {
             Long totalAttempts = userMissionRepository.countByMissionId(mission.getId());
             if (totalAttempts > 0) {
                 Long failed = userMissionRepository.countFailedByMissionId(mission.getId());
-                double failureRate = (failed.doubleValue() / totalAttempts) * 100;
+                double failureRate = (failed.doubleValue() / totalAttempts) * BusinessConstants.PERCENTAGE_MULTIPLIER;
 
                 if (failureRate > highestFailureRate) {
                     highestFailureRate = failureRate;
@@ -114,7 +115,7 @@ public class GetAdminDashboardService {
         List<Boss> allBosses = bossRepository.findAll();
 
         Boss mostUndefeated = null;
-        double lowestDefeatRate = 100.0;
+        double lowestDefeatRate = BusinessConstants.INITIAL_DEFEAT_RATE;
         long minDefeated = Long.MAX_VALUE;
         long maxTotalAttempts = 0L;
 
@@ -122,7 +123,7 @@ public class GetAdminDashboardService {
             Long totalAttempts = userBossRepository.countByBossId(boss.getId());
             if (totalAttempts > 0) {
                 Long defeated = userBossRepository.countDefeatedByBossId(boss.getId());
-                double defeatRate = (defeated.doubleValue() / totalAttempts) * 100;
+                double defeatRate = (defeated.doubleValue() / totalAttempts) * BusinessConstants.PERCENTAGE_MULTIPLIER;
 
                 if (defeatRate < lowestDefeatRate || (defeatRate == lowestDefeatRate && defeated < minDefeated)) {
                     lowestDefeatRate = defeatRate;
