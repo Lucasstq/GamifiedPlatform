@@ -98,7 +98,8 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        //Aumenta o tempo de hash, melhora segurança contra força bruta
+        return new BCryptPasswordEncoder(12);
     }
 }
 
