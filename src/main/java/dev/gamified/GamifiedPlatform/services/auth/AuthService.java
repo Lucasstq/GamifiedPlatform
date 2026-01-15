@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -28,6 +29,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final SecurityAuditService auditService;
 
+    @Transactional
     public LoginResponse authenticate(LoginRequest request, String ipAddress, String userAgent) {
         // Verifica rate limiting antes de processar login
         if (!rateLimitService.isLoginAllowed(request.username())) {
@@ -91,11 +93,29 @@ public class AuthService {
     }
 
     /**
-     * Renova o access token usando um refresh token válido.
+     * Renova o access token usando um refresh token válido, faz rotação de refresh token.
      */
-    public LoginResponse refreshAccessToken(String refreshTokenValue, String ipAddress) {
-        RefreshToken refreshToken = refreshTokenService.validateRefreshToken(refreshTokenValue);
-        User user = refreshToken.getUser();
+    @Transactional
+    public LoginResponse refreshAccessToken(String refreshTokenValue, String ipAddress, String userAgent) {
+        RefreshToken oldToken = refreshTokenService.validateRefreshToken(refreshTokenValue);
+        User user = oldToken.getUser();
+
+        oldToken.setRevoked(true);
+        refreshTokenService.saveRevokedToken(oldToken);
+
+        RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(user,
+                ipAddress, userAgent);
+
+        //Verificação de dispositivo diferente
+        boolean sameAgent = oldToken.getUserAgent().equals(userAgent);
+        if(!sameAgent){
+            auditService.logSuspiciousActivity(
+                    user.getId(),
+                    user.getUsername(),
+                    ipAddress,
+                    "Refresh token rotated with different user agent"
+            );
+        }
 
         // Gerar novo access token
         String accessToken = jwtTokenService.generateAccessToken(user);
@@ -106,7 +126,7 @@ public class AuthService {
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshTokenValue) // Mesmo refresh token
+                .refreshToken(newRefreshToken.getToken()) // Rotação do refresh token
                 .tokenType("Bearer")
                 .expiresIn(jwtTokenService.getAccessTokenExpiration())
                 .refreshExpiresIn(jwtTokenService.getRefreshTokenExpiration())
