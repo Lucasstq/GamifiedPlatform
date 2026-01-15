@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.admin;
 
+import dev.gamified.GamifiedPlatform.constants.BusinessConstants;
 import dev.gamified.GamifiedPlatform.domain.Mission;
 import dev.gamified.GamifiedPlatform.dtos.response.missions.MissionDifficultyAnalysisResponse;
 import dev.gamified.GamifiedPlatform.repository.MissionRepository;
@@ -29,7 +30,7 @@ public class GetMissionDifficultyAnalysisService {
         List<Mission> allMissions = missionRepository.findAll();
         List<MissionDifficultyAnalysisResponse.DifficultMission> missionStats = new ArrayList<>();
 
-        double totalFailureRate = 0.0;
+        double totalFailureRate = BusinessConstants.DEFAULT_RATE;
         int missionCount = 0;
 
         for (Mission mission : allMissions) {
@@ -39,8 +40,10 @@ public class GetMissionDifficultyAnalysisService {
                 Long approved = userMissionRepository.countCompletedByMissionId(mission.getId());
                 Long failed = userMissionRepository.countFailedByMissionId(mission.getId());
 
-                double failureRate = (failed.doubleValue() / totalSubmissions) * 100;
-                double approvalRate = (approved.doubleValue() / totalSubmissions) * 100;
+                double failureRate = (failed.doubleValue() / totalSubmissions)
+                        * BusinessConstants.PERCENTAGE_MULTIPLIER;
+                double approvalRate = (approved.doubleValue() / totalSubmissions)
+                        * BusinessConstants.PERCENTAGE_MULTIPLIER;
 
                 totalFailureRate += failureRate;
                 missionCount++;
@@ -58,7 +61,8 @@ public class GetMissionDifficultyAnalysisService {
             }
         }
 
-        Double averageFailureRate = missionCount > 0 ? totalFailureRate / missionCount : 0.0;
+        Double averageFailureRate = missionCount > 0 ? totalFailureRate / missionCount :
+                BusinessConstants.DEFAULT_RATE;
 
         List<MissionDifficultyAnalysisResponse.DifficultMission> hardestMissions = missionStats.stream()
                 .sorted(Comparator.comparing(MissionDifficultyAnalysisResponse.DifficultMission::failureRate).reversed())

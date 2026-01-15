@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.admin;
 
+import dev.gamified.GamifiedPlatform.constants.BusinessConstants;
 import dev.gamified.GamifiedPlatform.domain.Boss;
 import dev.gamified.GamifiedPlatform.dtos.response.bosses.BossStatsResponse;
 import dev.gamified.GamifiedPlatform.repository.BossRepository;
@@ -30,7 +31,7 @@ public class GetBossStatsService {
         List<BossStatsResponse.BossStat> bossStats = new ArrayList<>();
 
         long totalAttempts = 0;
-        double totalDefeatRate = 0.0;
+        double totalDefeatRate = BusinessConstants.DEFAULT_RATE;
         int bossCount = 0;
 
         for (Boss boss : allBosses) {
@@ -38,8 +39,11 @@ public class GetBossStatsService {
             Long defeats = userBossRepository.countDefeatedByBossId(boss.getId());
             Long failures = userBossRepository.countFailedByBossId(boss.getId());
 
-            double defeatRate = attempts > 0 ? (defeats.doubleValue() / attempts) * 100 : 0.0;
-            double failureRate = attempts > 0 ? (failures.doubleValue() / attempts) * 100 : 0.0;
+            double defeatRate = attempts > 0 ? (defeats.doubleValue() / attempts) *
+                    BusinessConstants.PERCENTAGE_MULTIPLIER : BusinessConstants.DEFAULT_RATE;
+
+            double failureRate = attempts > 0 ? (failures.doubleValue() / attempts) *
+                    BusinessConstants.PERCENTAGE_MULTIPLIER : BusinessConstants.DEFAULT_RATE;
 
             totalAttempts += attempts;
             totalDefeatRate += defeatRate;
@@ -57,7 +61,7 @@ public class GetBossStatsService {
                     .build());
         }
 
-        Double averageDefeatRate = bossCount > 0 ? totalDefeatRate / bossCount : 0.0;
+        Double averageDefeatRate = bossCount > 0 ? totalDefeatRate / bossCount : BusinessConstants.DEFAULT_RATE;
 
         List<BossStatsResponse.BossStat> undefeatedBosses = bossStats.stream()
                 .filter(stat -> stat.totalDefeats() == 0)
