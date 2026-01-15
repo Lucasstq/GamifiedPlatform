@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.boss;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.UserBoss;
 import dev.gamified.GamifiedPlatform.dtos.response.bosses.UserBossResponse;
@@ -34,16 +35,10 @@ public class GetMyBossEvaluationsService {
 
         log.info("Getting boss evaluations made by mentor {}", mentorId);
 
-        checkPermission(mentorId);
+        PermissionValidator.validateResourceOwnerOrAdmin(mentorId);
         Page<UserBoss> evaluatedBosses = userBossRepository.findEvaluationsByMentor(mentorId, pageable);
 
         return evaluatedBosses.map(BossMapper::toUserBossResponse);
-    }
-
-    private void checkPermission(Long mentorId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(mentorId)) {
-            throw new AccessDeniedException("You do not have permission to access these evaluations.");
-        }
     }
 }
 

@@ -1,6 +1,7 @@
 package dev.gamified.GamifiedPlatform.services.boss;
 
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
+import dev.gamified.GamifiedPlatform.constants.BusinessConstants;
 import dev.gamified.GamifiedPlatform.domain.Boss;
 import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.domain.User;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 
 /**
  * Serviço responsável por verificar e desbloquear bosses quando o usuário
- * alcança 80% de progresso nas missões de um nível.
+ * alcança o limiar de progresso necessário nas missões de um nível.
  */
 @Service
 @RequiredArgsConstructor
@@ -57,8 +58,8 @@ public class CheckBossUnlockService {
             throw new BusinessException("No missions found for this level");
         }
 
-        double progressPercentage = (completedMissions * 100.0) / totalMissions;
-        boolean shouldUnlock = progressPercentage >= 80.0;
+        double progressPercentage = (completedMissions * BusinessConstants.PERCENTAGE_MULTIPLIER) / totalMissions;
+        boolean shouldUnlock = progressPercentage >= BusinessConstants.BOSS_UNLOCK_THRESHOLD_PERCENTAGE;
 
         UserBoss userBoss = findOrCreateUserBoss(currentUser, boss);
 

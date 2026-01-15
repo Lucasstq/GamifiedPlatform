@@ -1,5 +1,6 @@
 package dev.gamified.GamifiedPlatform.services.boss;
 
+import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
 import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.UserBoss;
 import dev.gamified.GamifiedPlatform.dtos.request.boss.BossFightSubmissionRequest;
@@ -44,7 +45,7 @@ public class SubmitBossFightService {
 
         log.info("User {} submitting boss fight solution for boss {}", userId, bossId);
 
-        validateUserPermission(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
 
         UserBoss userBoss = findUserBoss(userId, bossId);
         validateBossStatus(userBoss);
@@ -55,12 +56,6 @@ public class SubmitBossFightService {
         log.info("Boss fight solution submitted successfully by user {} for boss {}", userId, bossId);
 
         return BossMapper.toUserBossResponse(savedUserBoss);
-    }
-
-    private void validateUserPermission(Long userId) {
-        if (!SecurityUtils.isResourceOwnerOrAdmin(userId)) {
-            throw new AccessDeniedException("You do not have permission to access this feature");
-        }
     }
 
     private UserBoss findUserBoss(Long userId, Long bossId) {
