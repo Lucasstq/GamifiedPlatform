@@ -39,3 +39,6 @@ authz.pub
 
 ### Requirements ###
 requisitos.txt
+
+### Class Files ###
+/src/main/java/dev/gamified/GamifiedPlatform/config/AdminSeederRunner.java
