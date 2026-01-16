@@ -1,5 +1,8 @@
 package dev.gamified.GamifiedPlatform.config;
 
+import dev.gamified.GamifiedPlatform.deadletter.DeadLetterQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -16,6 +19,13 @@ import java.util.concurrent.Executor;
 @EnableAsync
 @EnableScheduling
 public class AsyncConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(AsyncConfig.class);
+    private final DeadLetterQueue deadLetterQueue;
+
+    public AsyncConfig(DeadLetterQueue deadLetterQueue) {
+        this.deadLetterQueue = deadLetterQueue;
+    }
 
     @Bean(name = "taskExecutor")
     public Executor taskExecutor() {
@@ -39,8 +49,12 @@ public class AsyncConfig {
         // Tempo máximo de espera no shutdown (60 segundos)
         executor.setAwaitTerminationSeconds(60);
 
+        executor.setRejectedExecutionHandler((r, exec) -> {
+            log.error("Task rejected, sending to DLQ: {}", r);
+            deadLetterQueue.add(r);
+        });
+
         executor.initialize();
         return executor;
     }
 }
-

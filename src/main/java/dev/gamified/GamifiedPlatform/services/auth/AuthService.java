@@ -81,11 +81,11 @@ public class AuthService {
 
         // Log de sucesso
         auditService.logLoginSuccess(user.getId(), user.getUsername(), ipAddress, userAgent);
-        log.info("User logged in successfully: {} from IP: {}", user.getUsername(), ipAddress);
+        log.info("User logged in successfully: {} from IP: {}", maskUsername(user.getUsername()), maskIp(ipAddress));
 
         return LoginResponse.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken.getToken())
+                .refreshToken(refreshToken != null ? refreshToken.getToken() : null)
                 .tokenType("Bearer")
                 .expiresIn(jwtTokenService.getAccessTokenExpiration())
                 .refreshExpiresIn(jwtTokenService.getRefreshTokenExpiration())
@@ -182,5 +182,16 @@ public class AuthService {
             throw new BusinessException("Email address is not verified");
         }
     }
-}
 
+    private String maskUsername(String username) {
+        if (username == null) return "***";
+        return username.length() > 3 ? username.substring(0, 2) + "***" : "***";
+    }
+
+    private String maskIp(String ip) {
+        if (ip == null) return "***";
+        int idx = ip.lastIndexOf('.');
+        if (idx > 0) return ip.substring(0, idx) + ".***";
+        return "***";
+    }
+}
