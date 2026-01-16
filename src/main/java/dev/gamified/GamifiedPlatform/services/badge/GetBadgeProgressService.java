@@ -36,8 +36,8 @@ public class GetBadgeProgressService {
     public BadgeProgressResponse execute(Long userId) {
         log.info("Calculating badge progress for user {}", userId);
 
-        PermissionValidator.validateResourceOwnerOrAdmin(userId);
         validateUserExists(userId);
+        PermissionValidator.validateResourceOwnerOrAdmin(userId);
 
         Long totalBadges = badgeRepository.count();
         Long unlockedBadges = userBadgeRepository.countByUserId(userId);
