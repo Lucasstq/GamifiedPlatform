@@ -29,12 +29,7 @@ import java.util.Map;
 @EnableCaching
 public class RedisConfig {
 
-    /**
-     * Configura o ObjectMapper para serialização JSON no Redis.
-     * - Suporta tipos polimórficos (herança)
-     * - Suporta Java 8 Time API (LocalDateTime, etc)
-     * - Adiciona informações de tipo para deserialização correta
-     */
+     //Configura o ObjectMapper para serialização JSON no Redis, adiciona informações de tipo para deserialização correta
     @Bean
     public ObjectMapper redisObjectMapper() {
         ObjectMapper mapper = new ObjectMapper();
@@ -75,10 +70,7 @@ public class RedisConfig {
         return template;
     }
 
-    /**
-     * Gerenciador de cache do Spring com Redis.
-     * Define TTLs diferentes para cada tipo de cache.
-     */
+    //Gerenciador de cache do Spring com Redis. Define TTLs diferentes para cada tipo de cache.
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 
@@ -100,11 +92,11 @@ public class RedisConfig {
         // Cache de níveis - praticamente imutável, TTL longo
         cacheConfigurations.put("levels", defaultConfig.entryTtl(Duration.ofHours(24)));
 
-        // Cache de missões - muda pouco, TTL longo
-        cacheConfigurations.put("missions", defaultConfig.entryTtl(Duration.ofHours(12)));
+        // Cache de missões - muda pouco, TTL menor
+        cacheConfigurations.put("missions", defaultConfig.entryTtl(Duration.ofMinutes(30)));
 
-        // Cache de missões por nível - muda pouco
-        cacheConfigurations.put("missionsByLevel", defaultConfig.entryTtl(Duration.ofHours(12)));
+        // Cache de missões por nível - TTL menor
+        cacheConfigurations.put("missionsByLevel", defaultConfig.entryTtl(Duration.ofMinutes(30)));
 
         // Cache de scopes - praticamente imutável
         cacheConfigurations.put("scopes", defaultConfig.entryTtl(Duration.ofHours(24)));
@@ -128,4 +120,3 @@ public class RedisConfig {
                 .build();
     }
 }
-
