@@ -4,6 +4,7 @@ import dev.gamified.GamifiedPlatform.domain.Levels;
 import dev.gamified.GamifiedPlatform.domain.PlayerCharacter;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.response.ranking.RankingResponse;
+import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.repository.LevelRepository;
 import dev.gamified.GamifiedPlatform.repository.PlayerCharacterRepository;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,8 @@ public class GetGlobalRankingService {
 
         long start = pageable.getOffset();
         long end = start + pageable.getPageSize() - 1;
+
+        validatePagination(pageable);
 
         Set<Object> characterIds = zSetOps.reverseRange(RANKING_CACHE_KEY, start, end);
 
@@ -103,5 +106,14 @@ public class GetGlobalRankingService {
 
         log.debug("Ranking fetched with {} entries using optimized batch queries", ranking.size());
         return new PageImpl<>(ranking, pageable, cacheSize != null ? cacheSize : 0);
+    }
+
+    private void validatePagination(Pageable pageable) {
+        if (pageable.getPageSize() > 1000) {
+            throw new BusinessException("Page size cannot exceed 1000");
+        }
+        if (pageable.getOffset() < 0) {
+            throw new BusinessException("Invalid page offset");
+        }
     }
 }
