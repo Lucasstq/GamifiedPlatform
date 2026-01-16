@@ -20,8 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import org.apache.commons.io.FilenameUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -57,12 +60,11 @@ public class UploadGrimoireService {
 
         try {
             String originalFilename = file.getOriginalFilename();
-
-            String fileExtension = originalFilename != null && originalFilename.contains(".")
-                    ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                    : ".pdf";
-
-            String uniqueFileName = UUID.randomUUID() + fileExtension;
+            String sanitizedName = originalFilename != null ? Paths.get(originalFilename).getFileName().toString() : null;
+            String fileExtension = sanitizedName != null ?
+                	FilenameUtils.getExtension(sanitizedName) : "pdf";
+            if (fileExtension.isEmpty()) fileExtension = "pdf";
+            String uniqueFileName = UUID.randomUUID() + "." + fileExtension;
             String objectKey = "level-" + level.getOrderLevel() + "/" + uniqueFileName;
 
             minioClient.putObject(
@@ -77,7 +79,7 @@ public class UploadGrimoireService {
             Grimoire grimoire = Grimoire.builder()
                     .level(level)
                     .fileName(uniqueFileName)
-                    .originalName(originalFilename)
+                    .originalName(sanitizedName)
                     .fileSize(file.getSize())
                     .contentType(file.getContentType())
                     .minioBucket(grimoiresBucket)
