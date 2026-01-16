@@ -85,8 +85,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(OAuth2AuthenticationException.class)
-    public ResponseEntity<Map<String, Object>> handleOAuth2AuthenticationException(
-            org.springframework.security.oauth2.core.OAuth2AuthenticationException ex) {
+    public ResponseEntity<Map<String, Object>> handleOAuth2AuthenticationException(OAuth2AuthenticationException ex) {
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.UNAUTHORIZED.value());
@@ -110,31 +109,15 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGenericException(Exception ex, HttpServletRequest request) {
-        //Gerar ID único para rastreamento do erro
         String errorId = UUID.randomUUID().toString();
-
-        // Log completo do erro (APENAS em logs internos, não na response)
-        log.error("Unhandled exception [errorId={}] on request [{}]: {}",
-                  errorId, request.getRequestURI(), ex.getMessage(), ex);
-
+        log.error("Unhandled exception [errorId={}] on request [{}]: {}", errorId, request.getRequestURI(),
+                ex.getMessage(), ex);
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("timestamp", LocalDateTime.now());
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
         errorResponse.put("error", "Internal Server Error");
         errorResponse.put("errorId", errorId);
-
-        //Mostrar detalhes APENAS em ambiente de desenvolvimento
-        if (showErrorDetails) {
-            errorResponse.put("message", ex.getMessage());
-            errorResponse.put("exception", ex.getClass().getName());
-            errorResponse.put("stackTrace", Arrays.toString(ex.getStackTrace()));
-            log.warn("Error details exposed (development mode): {}", ex.getMessage());
-        } else {
-            // Produção: mensagem genérica
-            errorResponse.put("message", "An unexpected error occurred. Please contact support with error ID: " + errorId);
-        }
-
+        errorResponse.put("message", "An unexpected error occurred. Please contact support with error ID: " + errorId);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 }
-
