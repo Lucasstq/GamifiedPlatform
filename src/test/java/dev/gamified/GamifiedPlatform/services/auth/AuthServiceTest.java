@@ -426,9 +426,6 @@ class AuthServiceTest {
         u.setActive(true);
         u.setEmailVerified(true);
 
-        // Ajuste conforme seu enum/provider real
-        // u.setProvider(AuthProvider.LOCAL);
-        // Se no seu User provider é obrigatório e não setar quebra o teste, set aqui.
         u.setProvider(dev.gamified.GamifiedPlatform.enums.AuthProvider.LOCAL);
 
         return u;
