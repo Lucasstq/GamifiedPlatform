@@ -6,5 +6,6 @@ public enum NotificationType {
     BADGE_UNLOCKED,
     BOSS_EVALUATED,
     BOSS_UNLOCKED,
-    GRIMOIRE_UNLOCKED
+    GRIMOIRE_UNLOCKED,
+    SYSTEM
 }
