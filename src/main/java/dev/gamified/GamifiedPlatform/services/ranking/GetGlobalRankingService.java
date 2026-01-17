@@ -37,6 +37,8 @@ public class GetGlobalRankingService {
         log.info("Fetching global ranking - page: {}, size: {}",
                 pageable.getPageNumber(), pageable.getPageSize());
 
+        validatePagination(pageable);
+
         ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
         Long cacheSize = zSetOps.size(RANKING_CACHE_KEY);
 
@@ -48,7 +50,7 @@ public class GetGlobalRankingService {
         long start = pageable.getOffset();
         long end = start + pageable.getPageSize() - 1;
 
-        validatePagination(pageable);
+
 
         Set<Object> characterIds = zSetOps.reverseRange(RANKING_CACHE_KEY, start, end);
 

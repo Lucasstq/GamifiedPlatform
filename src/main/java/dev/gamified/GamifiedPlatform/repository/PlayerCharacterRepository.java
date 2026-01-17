@@ -18,11 +18,10 @@ public interface PlayerCharacterRepository extends JpaRepository<PlayerCharacter
     @Query("SELECT pc FROM PlayerCharacter pc LEFT JOIN FETCH pc.user WHERE pc.id IN :ids")
     List<PlayerCharacter> findAllByIdInWithUser(@Param("ids") List<Long> ids);
 
-    @Query(value = "SELECT " +
-            "  (SELECT COUNT(*) + 1 FROM player_character pc " +
-            "   WHERE pc.level > p.level OR (pc.level = p.level AND pc.xp > p.xp)) as position, " +
-            "  (SELECT COUNT(*) FROM player_character) as totalPlayers " +
-            "FROM player_character p WHERE p.id = :id",
-            nativeQuery = true)
+    @Query("SELECT new dev.gamified.GamifiedPlatform.dtos.response.ranking.RankingInfo(" +
+            "  (SELECT COUNT(pc) + 1 FROM PlayerCharacter pc " +
+            "   WHERE pc.level > p.level OR (pc.level = p.level AND pc.xp > p.xp)), " +
+            "  (SELECT COUNT(pc2) FROM PlayerCharacter pc2)) " +
+            "FROM PlayerCharacter p WHERE p.id = :id")
     RankingInfo findPlayerPosition(@Param("id") Long id);
 }
