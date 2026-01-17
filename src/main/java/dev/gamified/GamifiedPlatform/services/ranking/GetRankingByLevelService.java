@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -60,35 +62,50 @@ public class GetRankingByLevelService {
             return new PageImpl<>(List.of(), pageable, cacheSize != null ? cacheSize : 0);
         }
 
+        //Converte IDs para List<Long> mantendo a ordem do Redis
+        List<Long> charIds = characterIds.stream()
+                .map(id -> ((Number) id).longValue())
+                .toList();
+
+        //Reaproveita o mesmo método do global ranking
+        List<PlayerCharacter> characters = playerCharacterRepository.findAllByIdInWithUser(charIds);
+
+        //Mapa por ID para manter a ordem do Redis
+        Map<Long, PlayerCharacter> characterMap = characters.stream()
+                .collect(Collectors.toMap(PlayerCharacter::getId, c -> c));
+
+        Set<Integer> levelOrders = characters.stream()
+                .map(PlayerCharacter::getLevel)
+                .collect(Collectors.toSet());
+
+        Map<Integer, Levels> levelsMap = levelRepository.findAllByOrderLevelIn(levelOrders)
+                .stream()
+                .collect(Collectors.toMap(Levels::getOrderLevel, l -> l));
+
         List<RankingResponse> ranking = new ArrayList<>();
         int position = (pageable.getPageNumber() * pageable.getPageSize()) + 1;
         Long currentUserId = SecurityUtils.getCurrentUserId().orElse(null);
 
-        for (Object characterId : characterIds) {
-            Long charId = ((Number) characterId).longValue();
-            PlayerCharacter character = playerCharacterRepository.findById(charId).orElse(null);
+        for (Long charId : charIds) {
+            PlayerCharacter character = characterMap.get(charId);
+            if (character == null) continue;
 
-            if (character != null) {
+            User user = character.getUser();
+            Levels charLevel = levelsMap.get(character.getLevel());
 
-                User user = character.getUser();
-                Levels charLevel = levelRepository.findTopByOrderLevelLessThanEqualOrderByOrderLevelDesc(character.getLevel())
-                        .orElse(null);
-
-                ranking.add(RankingResponse.builder()
-                        .position(position)
-                        .userId(user.getId())
-                        .username(user.getUsername())
-                        .characterName(character.getName())
-                        .level(character.getLevel())
-                        .xp(character.getXp())
-                        .levelName(charLevel != null ? charLevel.getName() : "Unknown")
-                        .levelTitle(charLevel != null ? charLevel.getTitle() : "Unknown")
-                        .isMe(currentUserId != null && currentUserId.equals(user.getId()))
-                        .build());
-                position++;
-            }
+            ranking.add(RankingResponse.builder()
+                    .position(position)
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .characterName(character.getName())
+                    .level(character.getLevel())
+                    .xp(character.getXp())
+                    .levelName(charLevel != null ? charLevel.getName() : "Unknown")
+                    .levelTitle(charLevel != null ? charLevel.getTitle() : "Unknown")
+                    .isMe(currentUserId != null && currentUserId.equals(user.getId()))
+                    .build());
+            position++;
         }
-
         return new PageImpl<>(ranking, pageable, cacheSize != null ? cacheSize : 0);
     }
 }
