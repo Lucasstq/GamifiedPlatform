@@ -1,10 +1,8 @@
 package dev.gamified.GamifiedPlatform.services.user;
 
 import dev.gamified.GamifiedPlatform.config.security.PermissionValidator;
-import dev.gamified.GamifiedPlatform.config.security.SecurityUtils;
 import dev.gamified.GamifiedPlatform.domain.User;
 import dev.gamified.GamifiedPlatform.dtos.request.user.UserAuthenticateChangePasswordRequest;
-import dev.gamified.GamifiedPlatform.exceptions.AccessDeniedException;
 import dev.gamified.GamifiedPlatform.exceptions.BusinessException;
 import dev.gamified.GamifiedPlatform.exceptions.ResourceNotFoundException;
 import dev.gamified.GamifiedPlatform.repository.UserRepository;
@@ -31,6 +29,8 @@ public class UserChangePasswordService {
         User existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
+        requestOldPasswordIsCorrect(existingUser.getPassword(), request.currentPassword());
+
         validatePasswordConfirmation(request.newPassword(), request.confirmNewPassword());
         validatePasswordIsDifferent(request.newPassword(), existingUser.getPassword());
 
@@ -46,6 +46,12 @@ public class UserChangePasswordService {
     private void validatePasswordIsDifferent(String newPassword, String oldPassword) {
         if (passwordEncoder.matches(newPassword, oldPassword)) {
             throw new BusinessException("New password must be different from the current password");
+        }
+    }
+
+    private void requestOldPasswordIsCorrect(String oldPassword, String existingEncodedPassword) {
+        if (!passwordEncoder.matches(oldPassword, existingEncodedPassword)) {
+            throw new BusinessException("Current password is incorrect");
         }
     }
 
