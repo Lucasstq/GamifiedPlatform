@@ -60,7 +60,7 @@ class GetMyRankingServiceTest {
     void shouldReturnUserRankingPositionSuccessfully() {
         // Arrange
         Long userId = 1L;
-        RankingInfo rankingInfo = new RankingInfo(5, 100L);
+        RankingInfo rankingInfo = new RankingInfo(5L, 100L);
 
         try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
             securityUtils.when(SecurityUtils::getCurrentUserId).thenReturn(Optional.of(userId));
@@ -75,7 +75,7 @@ class GetMyRankingServiceTest {
 
             // Assert
             assertNotNull(result);
-            assertEquals(5, result.position());
+            assertEquals(5L, result.position());
             assertEquals(100L, result.totalPlayers());
             assertEquals("Hero", result.characterName());
             assertEquals(3, result.level());
@@ -126,7 +126,7 @@ class GetMyRankingServiceTest {
     void shouldHandleRankingWithNoLevelFound() {
         // Arrange
         Long userId = 1L;
-        RankingInfo rankingInfo = new RankingInfo(1, 10L);
+        RankingInfo rankingInfo = new RankingInfo(1L, 10L);
 
         try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
             securityUtils.when(SecurityUtils::getCurrentUserId).thenReturn(Optional.of(userId));
@@ -151,7 +151,7 @@ class GetMyRankingServiceTest {
     void shouldCalculatePercentileCorrectlyForTopPlayer() {
         // Arrange
         Long userId = 1L;
-        RankingInfo rankingInfo = new RankingInfo(1, 100L); // 1º lugar de 100
+        RankingInfo rankingInfo = new RankingInfo(1L, 100L); // 1º lugar de 100
 
         try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
             securityUtils.when(SecurityUtils::getCurrentUserId).thenReturn(Optional.of(userId));
@@ -175,7 +175,7 @@ class GetMyRankingServiceTest {
     void shouldCalculatePercentileCorrectlyForLastPlayer() {
         // Arrange
         Long userId = 1L;
-        RankingInfo rankingInfo = new RankingInfo(100, 100L); // Último lugar
+        RankingInfo rankingInfo = new RankingInfo(100L, 100L); // Último lugar
 
         try (MockedStatic<SecurityUtils> securityUtils = mockStatic(SecurityUtils.class)) {
             securityUtils.when(SecurityUtils::getCurrentUserId).thenReturn(Optional.of(userId));
