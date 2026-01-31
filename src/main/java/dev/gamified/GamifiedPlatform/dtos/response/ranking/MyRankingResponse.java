@@ -9,7 +9,7 @@ import lombok.Builder;
 @Builder
 public record MyRankingResponse(
         @JsonProperty("position")
-        Integer position,
+        Long position,
 
         @JsonProperty("total_players")
         Long totalPlayers,
